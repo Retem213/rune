@@ -1,4 +1,3 @@
-pip install streamlit
 import tkinter as tk
 import math
 
