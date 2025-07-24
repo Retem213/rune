@@ -139,12 +139,12 @@ if st.button("검색"):
                     st.write(f"위치: {res['location']}")
                     if res['notes']:
                         st.write(f"비고: {res['notes']}")
-                    st.write(f"가장 가까운 텔레포트: {res['nearest_tp']['name']} (구분: {res['nearest_tp']['region_type']}), 거리: {res['dist']}")
+                    st.write(f"가장 가까운 텔레포트: {res['nearest_tp']['name']} (구분: {res['nearest_tp']['region_type']})")
                     st.write("---")
                 else:  # 던전
                     st.markdown(f"### [던전] {res['name']}")
                     st.write(f"위치: {res['location']}")
                     st.write(f"지역: {res['region']}")
                     st.write(f"보상: {res['reward']}")
-                    st.write(f"가장 가까운 텔레포트: {res['nearest_tp']['name']} (구분: {res['nearest_tp']['region_type']}), 거리: {res['dist']}")
+                    st.write(f"가장 가까운 텔레포트: {res['nearest_tp']['name']} (구분: {res['nearest_tp']['region_type']})")
                     st.write("---")
