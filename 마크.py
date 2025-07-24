@@ -122,7 +122,7 @@ def search_data(keyword):
 # ------------------ Streamlit UI ------------------
 st.title("던전/NPC 검색기")
 
-keyword = st.text_input("")
+keyword = st.text_input("*주의* 오류가 있을 수 있습니다.")
 
 if st.button("검색"):
     if not keyword.strip():
