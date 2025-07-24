@@ -1,4 +1,4 @@
-import tkinter as tk
+import streamlit as st
 import math
 
 # ------------------ 데이터 정의 ------------------
@@ -83,50 +83,68 @@ def get_nearest_teleport(target_loc):
     return nearest, int(min_dist)
 
 # ------------------ 검색 기능 ------------------
-def search_data():
-    keyword = search_entry.get().strip().lower()
-    output_text.delete("1.0", tk.END)
-
-    found = False
+def search_data(keyword):
+    keyword = keyword.strip().lower()
+    results = []
 
     for n in data["npcs"]:
         npc_name = n["name"].lower()
         notes = n.get("notes", "").lower()
         if keyword in npc_name or keyword in notes:
-            output_text.insert(tk.END, f"[NPC] {n['name']} - 위치: {n['location']}\n")
-            if "notes" in n:
-                output_text.insert(tk.END, f" 비고: {n['notes']}\n")
             nearest_tp, dist = get_nearest_teleport(n["location"])
-            output_text.insert(tk.END, f" 가장 가까운 텔레포트: {nearest_tp['name']} (구분: {nearest_tp['region_type']})\n\n")
-            found = True
+            results.append({
+                "type": "NPC",
+                "name": n['name'],
+                "location": n['location'],
+                "notes": n.get("notes", ""),
+                "nearest_tp": nearest_tp,
+                "dist": dist
+            })
 
     for d in data["dungeons"]:
         name = d["name"].lower()
         region = d["region"].lower()
         reward = d["reward"].lower()
         if keyword in name or keyword in region or keyword in reward:
-            output_text.insert(tk.END, f"[던전] {d['name']}\n")
-            output_text.insert(tk.END, f" 위치: {d['location']} / 지역: {d['region']}\n 보상: {d['reward']}\n")
             nearest_tp, dist = get_nearest_teleport(d["location"])
-            output_text.insert(tk.END, f" 가장 가까운 텔레포트: {nearest_tp['name']} (구분: {nearest_tp['region_type']})\n\n")
-            found = True
+            results.append({
+                "type": "던전",
+                "name": d["name"],
+                "location": d["location"],
+                "region": d["region"],
+                "reward": d["reward"],
+                "nearest_tp": nearest_tp,
+                "dist": dist
+            })
 
-    if not found:
-        output_text.insert(tk.END, "검색 결과가 없습니다.")
+    return results
 
-# ------------------ GUI 구성 ------------------
-root = tk.Tk()
-root.title("마인크래프트 RPG 던전/NPC 검색기")
-root.geometry("720x600")
+# ------------------ Streamlit UI ------------------
+st.title("마인크래프트 RPG 던전/NPC 검색기")
+st.write("던전, 지역, NPC 이름 등을 입력하여 검색하세요.")
 
-tk.Label(root, text="검색어 입력 (던전, 지역, NPC)").pack(pady=5)
-search_entry = tk.Entry(root, width=50)
-search_entry.pack(pady=5)
+keyword = st.text_input("검색어 입력")
 
-search_button = tk.Button(root, text="검색", command=search_data)
-search_button.pack(pady=5)
-
-output_text = tk.Text(root, wrap=tk.WORD, width=90, height=30)
-output_text.pack(padx=10, pady=10)
-
-root.mainloop()
+if st.button("검색"):
+    if not keyword.strip():
+        st.warning("검색어를 입력하세요.")
+    else:
+        results = search_data(keyword)
+        if not results:
+            st.info("검색 결과가 없습니다.")
+        else:
+            for res in results:
+                if res["type"] == "NPC":
+                    st.markdown(f"### [NPC] {res['name']}")
+                    st.write(f"위치: {res['location']}")
+                    if res['notes']:
+                        st.write(f"비고: {res['notes']}")
+                    st.write(f"가장 가까운 텔레포트: {res['nearest_tp']['name']} (구분: {res['nearest_tp']['region_type']}), 거리: {res['dist']}")
+                    st.write("---")
+                else:  # 던전
+                    st.markdown(f"### [던전] {res['name']}")
+                    st.write(f"위치: {res['location']}")
+                    st.write(f"지역: {res['region']}")
+                    st.write(f"보상: {res['reward']}")
+                    st.write(f"가장 가까운 텔레포트: {res['nearest_tp']['name']} (구분: {res['nearest_tp']['region_type']}), 거리: {res['dist']}")
+                    st.write("---")
