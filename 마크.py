@@ -120,7 +120,7 @@ def search_data(keyword):
     return results
 
 # ------------------ Streamlit UI ------------------
-st.title("마인크래프트 RPG 던전/NPC 검색기")
+st.title("던전/NPC 검색기")
 st.write("던전, 지역, NPC 이름 등을 입력하여 검색하세요.")
 
 keyword = st.text_input("검색어 입력")
