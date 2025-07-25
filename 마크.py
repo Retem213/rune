@@ -114,7 +114,7 @@ def search_data(keyword):
     return results
 
 # ------------------ Streamlit UI ------------------
-st.title("🔍 마인크래프트 RPG 검색기")
+st.title("룬제로 검색기")
 keyword = st.text_input("검색어를 입력하세요 (던전, 지역, 보상, NPC 등)")
 
 col1, col2 = st.columns(2)
