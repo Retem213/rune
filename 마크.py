@@ -38,13 +38,13 @@ data = {
         {"name": "광물 상인", "location": [2741, 69, -1001]},
         {"name": "정보 상인", "location": [2755, 73, -1015]},
         {"name": "낚시 상인", "location": [2757, 71, -986]},
-        {"name": "닐란 (연금 npc)", "location": [2932, 87, -957]},
-        {"name": "메이 (우편 npc)", "location": [2667, 103, -1071]},
-        {"name": "세르카 (기부 npc)", "location": [2816, 129, -1355]},
-        {"name": "드반 (제작 npc)", "location": [2625, 122, -1319]},
-        {"name": "브렌 (강화 npc)", "location": [2625, 122, -1319]},
-        {"name": "파이렌 (룬감정 npc)", "location": [2861, 94, -1070]},
-        {"name": "잡화 상인 (타룬)", "location": [1312, 14, -860]}
+        {"name": "연금 npc", "location": [2932, 87, -957], "notes": "닐란"},
+        {"name": "우편 npc", "location": [2667, 103, -1071], "notes": "메이"},
+        {"name": "기부 npc", "location": [2816, 129, -1355], "notes": "세르카"},
+        {"name": "제작 npc", "location": [2625, 122, -1319], "notes": "드반"},
+        {"name": "강화 npc", "location": [2625, 122, -1319], "notes": "브렌"},
+        {"name": "룬감정 npc", "location": [2861, 94, -1070], "notes": "파이렌"},
+        {"name": "잡화 상인", "location": [1312, 14, -860], "notes": "타룬"}
     ],
     "teleports": [
         {"name": "루네아 기사단 앞 길목", "location": [2661, 122, -1330], "region_type": "마을"},
