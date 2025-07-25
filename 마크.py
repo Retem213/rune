@@ -138,7 +138,7 @@ def trigger_search():
     st.session_state.search_triggered = True
 
 
-st.text_input("검색어를 입력하세요 (던전, 지역, 보상, NPC, 텔레포트 등)",
+st.text_input("검색어를 입력하세요 (던전, 재료, NPC, 텔레포트 등)",
               value=st.session_state.keyword,
               key="keyword",
               on_change=trigger_search)
