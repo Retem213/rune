@@ -63,6 +63,7 @@ data = {
     ]
 }
 
+
 # ------------------ 거리 계산 함수 ------------------
 def get_nearest_teleport(target_location):
     def euclidean(loc1, loc2):
@@ -127,13 +128,26 @@ def search_data(keyword):
 # ------------------ Streamlit UI ------------------
 st.title("룬제로 검색기")
 
-keyword = st.text_input("검색어를 입력하세요 (던전, 지역, 보상, NPC, 텔레포트 등)")
 
-col1, col2 = st.columns(2)
+if "keyword" not in st.session_state:
+    st.session_state.keyword = ""
+if "search_triggered" not in st.session_state:
+    st.session_state.search_triggered = False
+
+def trigger_search():
+    st.session_state.search_triggered = True
+
+
+st.text_input("검색어를 입력하세요 (던전, 지역, 보상, NPC, 텔레포트 등)",
+              value=st.session_state.keyword,
+              key="keyword",
+              on_change=trigger_search)
+
+col1, _ = st.columns(2)
 show_all = col1.button("모든 항목 보기")
-search = col2.button("검색")
 
-if show_all or (search and keyword.strip()):
+if show_all or st.session_state.search_triggered:
+    keyword = st.session_state.keyword
     results = search_data(keyword if not show_all else "")
 
     total_count = sum(len(lst) for lst in results.values())
@@ -163,7 +177,9 @@ if show_all or (search and keyword.strip()):
 
                 st.markdown("---")
 
-elif search and not keyword.strip():
+    st.session_state.search_triggered = False  # 검색 후 초기화
+
+elif st.session_state.search_triggered and not st.session_state.keyword.strip():
     st.warning("검색어를 입력해주세요.")
 
 
