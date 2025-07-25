@@ -149,13 +149,3 @@ if show_all or (search and keyword.strip()):
 elif search and not keyword.strip():
     st.warning("검색어를 입력해주세요.")
 
- # 지도 보기 체크박스
-    if st.checkbox("🗺 지도 보기"):
-        import pandas as pd
-        map_data = pd.DataFrame([
-            {"lat": loc[0], "lon": loc[2]}
-            for loc in [res["location"] for res in results]
-        ])
-        if not map_data.empty:
-            st.subheader("🗺 위치 시각화")
-            st.map(map_data)
