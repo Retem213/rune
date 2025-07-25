@@ -180,3 +180,4 @@ if show_all or st.session_state.search_triggered:
     st.session_state.search_triggered = False  # 검색 후 초기화
 
 elif st.session_state.search_triggered and not st.session_state.keyword.strip():
+    st.warning("검색어를 입력해주세요.")
