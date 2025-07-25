@@ -63,33 +63,34 @@ data = {
     ]
 }
 
-# ------------------ 거리 계산 ------------------
-def get_nearest_teleport(target_loc):
-    min_dist = float("inf")
-    nearest = None
-    for tp in data["teleports"]:
-        tp_loc = tp["location"]
-        dist = math.sqrt(sum((a - b) ** 2 for a, b in zip(tp_loc, target_loc)))
-        if dist < min_dist:
-            min_dist = dist
-            nearest = tp
-    return nearest, int(min_dist)
+# ------------------ 거리 계산 함수 ------------------
+def get_nearest_teleport(target_location):
+    def euclidean(loc1, loc2):
+        return math.sqrt(sum((a - b) ** 2 for a, b in zip(loc1, loc2)))
+
+    nearest = min(data["teleports"], key=lambda t: euclidean(t["location"], target_location))
+    distance = euclidean(nearest["location"], target_location)
+    return nearest, round(distance)
 
 # ------------------ 검색 기능 ------------------
 def search_data(keyword):
     keyword = keyword.strip().lower()
-    results = []
+    results = {
+        "던전": [],
+        "NPC": [],
+        "텔레포트": []
+    }
 
-    for n in data["npcs"]:
-        name = n["name"].lower()
-        notes = n.get("notes", "").lower()
-        if keyword in name or keyword in notes:
-            nearest_tp, dist = get_nearest_teleport(n["location"])
-            results.append({
+    for npc in data["npcs"]:
+        name = npc["name"].lower()
+        notes = npc.get("notes", "").lower()
+        if keyword in name or keyword in notes or keyword == "":
+            nearest_tp, dist = get_nearest_teleport(npc["location"])
+            results["NPC"].append({
                 "type": "NPC",
-                "name": n["name"],
-                "location": n["location"],
-                "notes": n.get("notes", ""),
+                "name": npc["name"],
+                "location": npc["location"],
+                "notes": npc.get("notes", ""),
                 "nearest_tp": nearest_tp,
                 "dist": dist
             })
@@ -98,9 +99,9 @@ def search_data(keyword):
         name = d["name"].lower()
         region = d["region"].lower()
         reward = d["reward"].lower()
-        if keyword in name or keyword in region or keyword in reward:
+        if keyword in name or keyword in region or keyword in reward or keyword == "":
             nearest_tp, dist = get_nearest_teleport(d["location"])
-            results.append({
+            results["던전"].append({
                 "type": "던전",
                 "name": d["name"],
                 "location": d["location"],
@@ -110,42 +111,59 @@ def search_data(keyword):
                 "dist": dist
             })
 
-    results.sort(key=lambda x: x["dist"])  # 거리순 정렬
+    for tp in data["teleports"]:
+        name = tp["name"].lower()
+        region_type = tp["region_type"].lower()
+        if keyword in name or keyword in region_type or keyword == "":
+            results["텔레포트"].append({
+                "type": "텔레포트",
+                "name": tp["name"],
+                "location": tp["location"],
+                "region_type": tp["region_type"]
+            })
+
     return results
 
 # ------------------ Streamlit UI ------------------
 st.title("룬제로 검색기")
-keyword = st.text_input("검색어를 입력하세요 (던전, 지역, 보상, NPC 등)")
+
+keyword = st.text_input("검색어를 입력하세요 (던전, 지역, 보상, NPC, 텔레포트 등)")
 
 col1, col2 = st.columns(2)
 show_all = col1.button("모든 항목 보기")
 search = col2.button("검색")
 
-# 검색어 처리
 if show_all or (search and keyword.strip()):
-    if show_all:
-        results = search_data("") 
-        st.info(f"전체 항목 {len(results)}개 표시 중")
-    else:
-        results = search_data(keyword)
-        if not results:
-            st.warning("검색 결과가 없습니다.")
-        else:
-            st.success(f"{len(results)}개의 결과가 검색되었습니다.")
+    results = search_data(keyword if not show_all else "")
 
-    # 출력
-    for res in results:
-        st.markdown(f"### [{res['type']}] {res['name']}")
-        st.code(f"{res['name']} @ {res['location']}")
-        st.write(f"위치: `{res['location']}`")
-        if res["type"] == "NPC":
-            if res["notes"]:
-                st.write(f"비고: {res['notes']}")
-        else:
-            st.write(f"지역: {res['region']}")
-            st.write(f"보상: {res['reward']}")
-        st.write(f"가장 가까운 텔레포트: **{res['nearest_tp']['name']}** ({res['nearest_tp']['region_type']})")
-        st.markdown("---")
+    total_count = sum(len(lst) for lst in results.values())
+    st.info(f"총 {total_count}개 결과가 검색되었습니다.")
+
+    for category in ["던전", "NPC", "텔레포트"]:
+        if results[category]:
+            st.markdown(f"## 🗂️ {category}")
+            for res in results[category]:
+                st.markdown(f"### [{res['type']}] {res['name']}")
+                st.code(f"{res['name']} @ {res['location']}")
+
+                st.write(f"위치: `{res['location']}`")
+
+                if res["type"] == "NPC":
+                    if res.get("notes"):
+                        st.write(f"비고: {res['notes']}")
+                    st.write(f"가장 가까운 텔레포트: **{res['nearest_tp']['name']}** ({res['nearest_tp']['region_type']}) - {res['dist']}m")
+
+                elif res["type"] == "던전":
+                    st.write(f"지역: {res['region']}")
+                    st.write(f"보상: {res['reward']}")
+                    st.write(f"가장 가까운 텔레포트: **{res['nearest_tp']['name']}** ({res['nearest_tp']['region_type']}) - {res['dist']}m")
+
+                elif res["type"] == "텔레포트":
+                    st.write(f"지역 구분: `{res['region_type']}`")
+
+                st.markdown("---")
+
 elif search and not keyword.strip():
     st.warning("검색어를 입력해주세요.")
+
 
