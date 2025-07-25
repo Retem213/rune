@@ -141,7 +141,7 @@ if show_all or (search and keyword.strip()):
 
     for category in ["던전", "NPC", "텔레포트"]:
         if results[category]:
-            st.markdown(f"## 🗂️ {category}")
+            st.markdown(f"## {category}")
             for res in results[category]:
                 st.markdown(f"### [{res['type']}] {res['name']}")
                 st.code(f"{res['name']} @ {res['location']}")
