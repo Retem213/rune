@@ -15,7 +15,7 @@ data = {
         {"name": "펜리르", "location": [1180, 75, -1130], "region": "고독한 늑대의 요람", "reward": "5,000 G, 영험한 힘이 깃든 늑대 이빨, 미약한 힘이 담긴 영혼"},
         {"name": "슬라임 퀸", "location": [1355, 70, -1114], "region": "부패의 모체", "reward": "3,000 G, 슬라임 퀸의 핵"},
         {"name": "포레스트 골렘", "location": [1100, 78, -1100], "region": "대자연의 수호전", "reward": "3,000 G, 골렘의 핵"},
-        {"name": "야만의 군체", "location": [-1600, -1197], "region": "", "reward": ""},
+        {"name": "야만의 군체", "location": [-1600, 0, -1197], "region": "", "reward": ""},
         {"name": "흑량", "location": [1630, 81, -690], "region": "잿빛 사냥꾼의 영역", "reward": "3,000 G,  검은 이리 갑주"},
         {"name": "고블린 라이더 & 와일드 보어 킹", "location": [1660, 69, -1200], "region": "야만의 군체", "reward": "3,000 G, 고블린라이더의 깃발"},
         {"name": "야만 전사 헬턴", "location": [1532, 16, -790], "region": "야만의 격전지", "reward": "3,000 G, 야만전사 도끼"},
@@ -29,7 +29,6 @@ data = {
         {"name": "타락한 성직자 시네리아(심연을 걷는자)", "location": [-117, 67, 978], "region": "그림자 예배당", "reward": "6,000 G, 부러진 낫, 미약한 힘이 담긴 영혼"}
     ],
     "npcs": [
-        {"name": "??? NPC", "location": [-4066, 70, 52], "notes": "던전 입장 도우미"},
         {"name": "정수 상인", "location": [-4077, 72, 78], "notes": "정수 15,000G 구매처"},
         {"name": "아이벨, 파르티오", "location": [2550, 86, -1011], "notes": "??? NPC"},
         {"name": "샤벨", "location": [2774, 106, -940], "notes": "??? NPC"},
@@ -55,11 +54,11 @@ data = {
         {"name": "루네아 대형분수", "location": [2660, 104, -1084], "region_type": "마을"},
         {"name": "키나르 마을 중앙", "location": [1290, 14, -874], "region_type": "던전"},
         {"name": "타룬 황국지대 남부", "location": [1446, 11, -623], "region_type": "던전"},
-        {"name": "타룬 황국지대 북쪽", "location": [1711, 13, -760], "region_type": "던전"},
-        {"name": "글리야 마을 중앙 (1)", "location": [2030, 14, -930], "region_type": "던전"},
-        {"name": "글리야 마을 남쪽", "location": [2088, 10, -1046], "region_type": "던전"},
-        {"name": "글리야 마을 북쪽", "location": [1470, 10, -774], "region_type": "던전"},
-        {"name": "글리야 마을 중앙 (2)", "location": [2266, 14, 2105], "region_type": "던전"},
+        {"name": "타룬 황국지대 북쪽", "location": [1178, 9, -1245], "region_type": "던전"},
+        {"name": "글리야 마을 중앙", "location": [20, 90, 332], "region_type": "던전"},
+        {"name": "글리야 마을 동쪽", "location": [428, 71, 395], "region_type": "던전"},
+        {"name": "글리야 마을 남쪽", "location": [140, 70, 774], "region_type": "던전"},
+        {"name": "글리야 마을 북동쪽", "location": [246, 68, 115], "region_type": "던전"},
         {"name": "글리야 마을 북서쪽", "location": [-235, 71, 29], "region_type": "던전"}
     ]
 }
@@ -118,23 +117,36 @@ def search_data(keyword):
 st.title("🔍 마인크래프트 RPG 검색기")
 keyword = st.text_input("검색어를 입력하세요 (던전, 지역, 보상, NPC 등)")
 
-if st.button("검색"):
-    if not keyword.strip():
-        st.warning("검색어를 입력해주세요.")
+col1, col2 = st.columns(2)
+show_all = col1.button("모든 항목 보기")
+search = col2.button("검색")
+
+# 검색어 처리
+if show_all or (search and keyword.strip()):
+    if show_all:
+        results = search_data("") 
+        st.info(f"전체 항목 {len(results)}개 표시 중")
     else:
         results = search_data(keyword)
         if not results:
-            st.info("검색 결과가 없습니다.")
+            st.warning("검색 결과가 없습니다.")
         else:
-            for res in results:
-                st.markdown(f"### [{res['type']}] {res['name']}")
-                st.write(f"위치: `{res['location']}`")
-                if res["type"] == "NPC":
-                    if res["notes"]:
-                        st.write(f"비고: {res['notes']}")
-                else:
-                    st.write(f"지역: {res['region']}")
-                    st.write(f"보상: {res['reward']}")
-                st.write(f"가장 가까운 텔레포트: **{res['nearest_tp']['name']}** ({res['nearest_tp']['region_type']})")
-                st.markdown("---")
+            st.success(f"{len(results)}개의 결과가 검색되었습니다.")
+
+    # 출력
+    for res in results:
+        st.markdown(f"### [{res['type']}] {res['name']}")
+        st.code(f"{res['name']} @ {res['location']}")
+        st.write(f"위치: `{res['location']}`")
+        if res["type"] == "NPC":
+            if res["notes"]:
+                st.write(f"비고: {res['notes']}")
+        else:
+            st.write(f"지역: {res['region']}")
+            st.write(f"보상: {res['reward']}")
+        st.write(f"가장 가까운 텔레포트: **{res['nearest_tp']['name']}** ({res['nearest_tp']['region_type']})")
+        st.markdown("---")
+elif search and not keyword.strip():
+    st.warning("검색어를 입력해주세요.")
+
 
