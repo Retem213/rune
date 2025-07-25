@@ -114,9 +114,9 @@ def search_data(keyword):
     results.sort(key=lambda x: x["dist"])  # 거리순 정렬
     return results
 
-
-st.title("룬제로")
-keyword = st.text_input("검색어를 입력하세요")
+# ------------------ Streamlit UI ------------------
+st.title("🔍 마인크래프트 RPG 검색기")
+keyword = st.text_input("검색어를 입력하세요 (던전, 지역, 보상, NPC 등)")
 
 if st.button("검색"):
     if not keyword.strip():
@@ -127,13 +127,14 @@ if st.button("검색"):
             st.info("검색 결과가 없습니다.")
         else:
             for res in results:
-                with st.expander(f"[{res['type']}] {res['name']}"):
-                    st.write(f"위치: `{res['location']}`")
-                    if res["type"] == "NPC":
-                        if res["notes"]:
-                            st.write(f"비고: {res['notes']}")
-                    else:
-                        st.write(f"지역: {res['region']}")
-                        st.write(f"보상: {res['reward']}")
-                    st.write(f"가장 가까운 텔레포트: **{res['nearest_tp']['name']}** ({res['nearest_tp']['region_type']})")
-                    st.write(f"거리: `{res['dist']}` 블럭")
+                st.markdown(f"### [{res['type']}] {res['name']}")
+                st.write(f"위치: `{res['location']}`")
+                if res["type"] == "NPC":
+                    if res["notes"]:
+                        st.write(f"비고: {res['notes']}")
+                else:
+                    st.write(f"지역: {res['region']}")
+                    st.write(f"보상: {res['reward']}")
+                st.write(f"가장 가까운 텔레포트: **{res['nearest_tp']['name']}** ({res['nearest_tp']['region_type']})")
+                st.markdown("---")
+
