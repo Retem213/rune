@@ -56,30 +56,24 @@ data = {
         {"name": "키나르 마을 중앙", "location": [1290, 14, -874], "region_type": "던전"},
         {"name": "타룬 황국지대 남부", "location": [1446, 11, -623], "region_type": "던전"},
         {"name": "타룬 황국지대 북쪽", "location": [1711, 13, -760], "region_type": "던전"},
-        {"name": "글리야 마을 중앙", "location": [2030, 14, -930], "region_type": "던전"},
+        {"name": "글리야 마을 중앙 (1)", "location": [2030, 14, -930], "region_type": "던전"},
         {"name": "글리야 마을 남쪽", "location": [2088, 10, -1046], "region_type": "던전"},
         {"name": "글리야 마을 북쪽", "location": [1470, 10, -774], "region_type": "던전"},
-        {"name": "글리야 마을 중앙", "location": [2266, 14, 2105], "region_type": "던전"},
+        {"name": "글리야 마을 중앙 (2)", "location": [2266, 14, 2105], "region_type": "던전"},
         {"name": "글리야 마을 북서쪽", "location": [-235, 71, 29], "region_type": "던전"}
     ]
 }
 
-# ------------------ 거리 계산 함수 ------------------
+# ------------------ 거리 계산 ------------------
 def get_nearest_teleport(target_loc):
-    min_dist = float('inf')
+    min_dist = float("inf")
     nearest = None
-
     for tp in data["teleports"]:
         tp_loc = tp["location"]
-        dist = math.sqrt(
-            (tp_loc[0] - target_loc[0]) ** 2 +
-            (tp_loc[1] - target_loc[1]) ** 2 +
-            (tp_loc[2] - target_loc[2]) ** 2
-        )
+        dist = math.sqrt(sum((a - b) ** 2 for a, b in zip(tp_loc, target_loc)))
         if dist < min_dist:
             min_dist = dist
             nearest = tp
-
     return nearest, int(min_dist)
 
 # ------------------ 검색 기능 ------------------
@@ -88,14 +82,14 @@ def search_data(keyword):
     results = []
 
     for n in data["npcs"]:
-        npc_name = n["name"].lower()
+        name = n["name"].lower()
         notes = n.get("notes", "").lower()
-        if keyword in npc_name or keyword in notes:
+        if keyword in name or keyword in notes:
             nearest_tp, dist = get_nearest_teleport(n["location"])
             results.append({
                 "type": "NPC",
-                "name": n['name'],
-                "location": n['location'],
+                "name": n["name"],
+                "location": n["location"],
                 "notes": n.get("notes", ""),
                 "nearest_tp": nearest_tp,
                 "dist": dist
@@ -117,33 +111,29 @@ def search_data(keyword):
                 "dist": dist
             })
 
+    results.sort(key=lambda x: x["dist"])  # 거리순 정렬
     return results
 
-# ------------------ Streamlit UI ------------------
-st.title("던전/NPC 검색기")
 
-keyword = st.text_input("*주의* 오류가 있을 수 있습니다.")
+st.title("룬제로")
+keyword = st.text_input("검색어를 입력하세요")
 
 if st.button("검색"):
     if not keyword.strip():
-        st.warning("검색어를 입력하세요.")
+        st.warning("검색어를 입력해주세요.")
     else:
         results = search_data(keyword)
         if not results:
             st.info("검색 결과가 없습니다.")
         else:
             for res in results:
-                if res["type"] == "NPC":
-                    st.markdown(f"### [NPC] {res['name']}")
-                    st.write(f"위치: {res['location']}")
-                    if res['notes']:
-                        st.write(f"비고: {res['notes']}")
-                    st.write(f"가장 가까운 텔레포트: {res['nearest_tp']['name']} (구분: {res['nearest_tp']['region_type']})")
-                    st.write("---")
-                else:  # 던전
-                    st.markdown(f"### [던전] {res['name']}")
-                    st.write(f"위치: {res['location']}")
-                    st.write(f"지역: {res['region']}")
-                    st.write(f"보상: {res['reward']}")
-                    st.write(f"가장 가까운 텔레포트: {res['nearest_tp']['name']} (구분: {res['nearest_tp']['region_type']})")
-                    st.write("---")
+                with st.expander(f"[{res['type']}] {res['name']}"):
+                    st.write(f"위치: `{res['location']}`")
+                    if res["type"] == "NPC":
+                        if res["notes"]:
+                            st.write(f"비고: {res['notes']}")
+                    else:
+                        st.write(f"지역: {res['region']}")
+                        st.write(f"보상: {res['reward']}")
+                    st.write(f"가장 가까운 텔레포트: **{res['nearest_tp']['name']}** ({res['nearest_tp']['region_type']})")
+                    st.write(f"거리: `{res['dist']}` 블럭")
