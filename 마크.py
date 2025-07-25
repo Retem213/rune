@@ -129,7 +129,7 @@ def search_data(keyword):
 st.set_page_config(page_title="룬제로 검색기", layout="wide")
 st.title("🔍 룬제로 검색기")
 
-keyword = st.text_input("검색어를 입력하세요 (던전, 지역, 보상, NPC 등)", placeholder="예: 알케미스트, 용암, 경험치")
+keyword = st.text_input("검색어를 입력하세요 (던전, 지역, 보상, NPC 등")
 
 results = search_data(keyword)
 total_count = sum(len(lst) for lst in results.values())
