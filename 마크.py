@@ -26,7 +26,12 @@ data = {
         {"name": "철혈의 심판자 타르콘", "location": [197, 73, 33], "region": "심판의 보루", "reward": "5,500 G, 망치자루, 미약한 힘이 담긴 영혼"},
         {"name": "악마 기사 베아르논", "location": [-654, 69, 217], "region": "파멸의 선봉대", "reward": "5,500 G, 번개조각, 미약한 힘이 담긴 영혼"},
         {"name": "심연의 기사 아르반델", "location": [-335, 72, -65], "region": "망각의 성채", "reward": "5,500 G, 심연을 비추는 등불, 미약한 힘이 담긴 영혼"},
-        {"name": "타락한 성직자 시네리아(심연을 걷는자)", "location": [-117, 67, 978], "region": "그림자 예배당", "reward": "6,000 G, 부러진 낫, 미약한 힘이 담긴 영혼"}
+        {"name": "타락한 성직자 시네리아(심연을 걷는자)", "location": [-117, 67, 978], "region": "그림자 예배당", "reward": "6,000 G, 부러진 낫, 미약한 힘이 담긴 영혼"},
+        {"name": "곷의 왈츠 플뢰리스", "location": [-340, 70, 950], "region": "가시 장미 정원", "reward": "6,000 G, 끝없는 개화, 미약한 힘이 담긴 영혼", "notes": "y좌표 임시"},
+        {"name": "비열한 그림자 셀렌", "location": [556, 72, 113], "region": "침묵의 회랑", "reward": "6,000 G, 목공 도구, 미약한 힘이 담긴 영혼", "notes": ""},
+        {"name": "폭풍의 창 오닉스", "location": [336, 70, 248], "region": "꿰뚫는 폭퐁의 눈", "reward": "5,000 G, 꺽여버린 창, 미약한 힘이 담긴 영혼", "notes": ""},
+        {"name": "저주 설계자 모르모트", "location": [-226, 72, 369], "region": "공허의 전당", "reward": "5,000 G, 공허한 운석", "notes": ""},
+        {"name": "키메라워리어", "location": [-158, 70, 73], "region": "혼동의 미궁", "reward": "", "notes": "사자혼종에서 변경된 보스"},
     ],
     "npcs": [
         {"name": "정수 상인", "location": [-4077, 72, 78], "notes": ""},
@@ -122,26 +127,46 @@ if "search_triggered" not in st.session_state:
 def trigger_search():
     st.session_state["search_triggered"] = True
 
-# ------------------ UI ------------------
+# ------------------ Streamlit UI ------------------
 st.title("룬제로 검색기")
 
-col1, col2 = st.columns([5, 1])
-col1.text_input(
-    "검색어를 입력하세요 (엔터 또는 검색버튼)",
-    key="keyword",
-    value=st.session_state["keyword"],
-    on_change=trigger_search
-)
-search_button = col2.button("검색", on_click=trigger_search)
 
-show_all = st.button("모든 항목 보기")
+if "keyword" not in st.session_state:
+    st.session_state.keyword = ""
+if "search_triggered" not in st.session_state:
+    st.session_state.search_triggered = False
 
-if show_all or st.session_state["search_triggered"]:
-    keyword = "" if show_all else st.session_state["keyword"]
+
+def trigger_search():
+    st.session_state.search_triggered = True
+
+
+st.markdown("**검색어를 입력하세요 (엔터 또는 검색버튼)**")
+
+
+input_col, button_col = st.columns([5, 1]) 
+
+with input_col:
+    st.text_input(
+        label="검색어", 
+        key="keyword", 
+        label_visibility="collapsed", 
+        on_change=trigger_search
+    )
+
+with button_col:
+    st.button("검색", on_click=trigger_search)
+
+# 모든 항목 보기 버튼
+st.button("모든 항목 보기", key="show_all", on_click=lambda: setattr(st.session_state, "keyword", ""))
+
+# 검색 실행 조건
+if st.session_state.search_triggered or st.session_state.keyword == "":
+    keyword = st.session_state.keyword
     results = search_data(keyword)
 
-    total = sum(len(v) for v in results.values())
-    st.info(f"총 {total}개의 결과가 검색되었습니다.")
+    total_count = sum(len(lst) for lst in results.values())
+    st.info(f"총 {total_count}개 결과가 검색되었습니다.")
 
     for category in ["던전", "NPC", "텔레포트"]:
         if results[category]:
@@ -154,20 +179,17 @@ if show_all or st.session_state["search_triggered"]:
                 if res["type"] == "NPC":
                     if res.get("notes"):
                         st.write(f"비고: {res['notes']}")
-                    st.write(f"가까운 텔레포트: **{res['nearest_tp']['name']}** ({res['nearest_tp']['region_type']}) - {res['dist']}m")
+                    st.write(f"가장 가까운 텔레포트: **{res['nearest_tp']['name']}** ({res['nearest_tp']['region_type']}) - {res['dist']}m")
 
                 elif res["type"] == "던전":
                     st.write(f"지역: {res['region']}")
                     st.write(f"보상: {res['reward']}")
-                    st.write(f"가까운 텔레포트: **{res['nearest_tp']['name']}** ({res['nearest_tp']['region_type']}) - {res['dist']}m")
+                    st.write(f"가장 가까운 텔레포트: **{res['nearest_tp']['name']}** ({res['nearest_tp']['region_type']}) - {res['dist']}m")
 
                 elif res["type"] == "텔레포트":
                     st.write(f"지역 구분: {res['region_type']}")
+
                 st.markdown("---")
 
-    # 검색 끝나면 트리거 끄기
-    st.session_state["search_triggered"] = False
-
-elif st.session_state["search_triggered"] and not st.session_state["keyword"].strip():
-    st.warning("검색어를 입력해주세요.")
+    st.session_state.search_triggered = False  # 검색 완료 후 초기화
 
