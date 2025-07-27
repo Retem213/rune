@@ -147,13 +147,14 @@ with center:
 
     st.markdown("<h1 style='text-align: center;'>룬제로 검색기</h1>", unsafe_allow_html=True)
 
-    st.markdown("**검색어를 입력하세요 (엔터 또는 검색 버튼)**")
+    st.markdown("**검색어를 입력하세요 (던전, 재료, NPC, 텔레포트 등)**")
     
     input_col, button_col = st.columns([5, 1]) 
     with input_col:
         st.text_input(
             label="검색어", 
             key="keyword", 
+            placeholder="검색어를 입력하세요 (엔터 또는 검색 버튼)"
             label_visibility="collapsed", 
             on_change=trigger_search
         )
