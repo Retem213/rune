@@ -128,78 +128,67 @@ def trigger_search():
     st.session_state["search_triggered"] = True
 
 # ------------------ Streamlit UI ------------------
-import streamlit as st
-
-st.set_page_config(page_title="룬제로 검색기", layout="wide")
 st.title("룬제로 검색기")
 
-# 사이드바 탭
-st.sidebar.title("항목 목록")
-menu = st.sidebar.radio("분류 선택", ["던전", "NPC", "텔레포트"])
 
-# 항목 리스트 만들기
-item_names = [item["name"] for item in data[menu.lower() + "s"]]
-selected_name = st.sidebar.selectbox(f"{menu} 목록", item_names)
-
-# 선택된 항목 정보 찾기
-selected_item = next((item for item in data[menu.lower() + "s"] if item["name"] == selected_name), None)
-
-if selected_item:
-    st.markdown(f"## [{menu}] {selected_item['name']}")
-    st.code(f"{selected_item['name']} @ {selected_item['location']}")
-    st.write(f"위치: `{selected_item['location']}`")
-
-    if menu == "던전":
-        st.write(f"지역: `{selected_item.get('region', '')}`")
-        st.write(f"보상: `{selected_item.get('reward', '')}`")
-        nearest_tp, dist = get_nearest_teleport(selected_item["location"])
-        st.write(f"가장 가까운 텔레포트: {nearest_tp['name']} ({nearest_tp['region_type']}) - {dist}m")
-
-    elif menu == "NPC":
-        st.write(f"비고: `{selected_item.get('notes', '없음')}`")
-        nearest_tp, dist = get_nearest_teleport(selected_item["location"])
-        st.write(f"가장 가까운 텔레포트: {nearest_tp['name']} ({nearest_tp['region_type']}) - {dist}m")
-
-    elif menu == "텔레포트":
-        st.write(f"지역 구분: `{selected_item.get('region_type', '')}`")
+if "keyword" not in st.session_state:
+    st.session_state.keyword = ""
+if "search_triggered" not in st.session_state:
+    st.session_state.search_triggered = False
 
 
-# ------------------ 검색 기능 ------------------
-st.divider()
-st.subheader("이름으로 검색")
-query = st.text_input("검색어를 입력하세요.")
+def trigger_search():
+    st.session_state.search_triggered = True
 
-if query:
-    results = search_items(query)
-    found = any(results.values())
 
-    if not found:
-        st.warning("검색 결과가 없습니다.")
-    else:
-        for category in ["던전", "NPC", "텔레포트"]:
-            if results[category]:
-                st.markdown(f"## {category}")
-                for res in results[category]:
-                    center_col = st.columns([1, 4, 1])[1]
-                    with center_col:
-                        st.markdown(f"#### {res['type']} - {res['name']}")
-                        st.code(f"{res['name']} @ {res['location']}")
-                        st.write(f"**위치:** `{res['location']}`")
+st.markdown("**검색어를 입력하세요 (엔터 또는 검색버튼)**")
 
-                        if res["type"] == "NPC":
-                            if res.get("notes"):
-                                st.write(f"**비고:** {res['notes']}")
-                            st.write(f"**가장 가까운 텔레포트:** {res['nearest_tp']['name']} ({res['nearest_tp']['region_type']}) - {res['dist']}m")
 
-                        elif res["type"] == "던전":
-                            st.write(f"**지역:** {res['region']}")
-                            st.write(f"**보상:** {res['reward']}")
-                            st.write(f"**가장 가까운 텔레포트:** {res['nearest_tp']['name']} ({res['nearest_tp']['region_type']}) - {res['dist']}m")
+input_col, button_col = st.columns([5, 1]) 
 
-                        elif res["type"] == "텔레포트":
-                            st.write(f"**지역 구분:** {res['region_type']}")
+with input_col:
+    st.text_input(
+        label="검색어", 
+        key="keyword", 
+        label_visibility="collapsed", 
+        on_change=trigger_search
+    )
 
-                        st.markdown("---")
-else:
-    st.info("좌측 목록에서 항목을 선택하거나 위에 이름을 검색하세요.")
+with button_col:
+    st.button("검색", on_click=trigger_search)
 
+# 모든 항목 보기 버튼
+st.button("모든 항목 보기", key="show_all", on_click=lambda: setattr(st.session_state, "keyword", ""))
+
+# 검색 실행 조건
+if st.session_state.search_triggered or st.session_state.keyword == "":
+    keyword = st.session_state.keyword
+    results = search_data(keyword)
+
+    total_count = sum(len(lst) for lst in results.values())
+    st.info(f"총 {total_count}개 결과가 검색되었습니다.")
+
+    for category in ["던전", "NPC", "텔레포트"]:
+        if results[category]:
+            st.markdown(f"## {category}")
+            for res in results[category]:
+                st.markdown(f"### [{res['type']}] {res['name']}")
+                st.code(f"{res['name']} @ {res['location']}")
+                st.write(f"위치: {res['location']}")
+
+                if res["type"] == "NPC":
+                    if res.get("notes"):
+                        st.write(f"비고: {res['notes']}")
+                    st.write(f"가장 가까운 텔레포트: **{res['nearest_tp']['name']}** ({res['nearest_tp']['region_type']}) - {res['dist']}m")
+
+                elif res["type"] == "던전":
+                    st.write(f"지역: {res['region']}")
+                    st.write(f"보상: {res['reward']}")
+                    st.write(f"가장 가까운 텔레포트: **{res['nearest_tp']['name']}** ({res['nearest_tp']['region_type']}) - {res['dist']}m")
+
+                elif res["type"] == "텔레포트":
+                    st.write(f"지역 구분: {res['region_type']}")
+
+                st.markdown("---")
+
+    st.session_state.search_triggered = False  # 검색 완료 후 초기화
