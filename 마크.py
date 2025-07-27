@@ -128,67 +128,74 @@ def trigger_search():
     st.session_state["search_triggered"] = True
 
 # ------------------ Streamlit UI ------------------
+st.set_page_config(layout="wide")
 st.title("룬제로 검색기")
 
-
+# 상태 변수 초기화
 if "keyword" not in st.session_state:
-    st.session_state.keyword = ""
+    st.session_state["keyword"] = ""
 if "search_triggered" not in st.session_state:
-    st.session_state.search_triggered = False
-
+    st.session_state["search_triggered"] = False
 
 def trigger_search():
-    st.session_state.search_triggered = True
+    st.session_state["search_triggered"] = True
 
+# 가운데 정렬: 좌측 여백 - 중앙 컬럼 - 우측 여백
+left, center, right = st.columns([1, 2, 1])
 
-st.markdown("**검색어를 입력하세요 (엔터 또는 검색버튼)**")
+with center:
+    st.markdown("**검색어를 입력하세요 (엔터 또는 검색 버튼)**")
+    
+    input_col, button_col = st.columns([5, 1]) 
+    with input_col:
+        st.text_input(
+            label="검색어", 
+            key="keyword", 
+            label_visibility="collapsed", 
+            on_change=trigger_search
+        )
+    with button_col:
+        st.button("검색", on_click=trigger_search)
 
+    st.button("모든 항목 보기", key="show_all", on_click=lambda: setattr(st.session_state, "keyword", ""))
 
-input_col, button_col = st.columns([5, 1]) 
-
-with input_col:
-    st.text_input(
-        label="검색어", 
-        key="keyword", 
-        label_visibility="collapsed", 
-        on_change=trigger_search
-    )
-
-with button_col:
-    st.button("검색", on_click=trigger_search)
-
-# 모든 항목 보기 버튼
-st.button("모든 항목 보기", key="show_all", on_click=lambda: setattr(st.session_state, "keyword", ""))
-
-# 검색 실행 조건
+# ------------------ 검색 결과 출력 ------------------
 if st.session_state.search_triggered or st.session_state.keyword == "":
     keyword = st.session_state.keyword
     results = search_data(keyword)
-
     total_count = sum(len(lst) for lst in results.values())
-    st.info(f"총 {total_count}개 결과가 검색되었습니다.")
 
-    for category in ["던전", "NPC", "텔레포트"]:
-        if results[category]:
-            st.markdown(f"## {category}")
-            for res in results[category]:
-                st.markdown(f"### [{res['type']}] {res['name']}")
-                st.code(f"{res['name']} @ {res['location']}")
-                st.write(f"위치: {res['location']}")
+    with center:
+        st.info(f"총 {total_count}개 결과가 검색되었습니다.")
 
-                if res["type"] == "NPC":
-                    if res.get("notes"):
-                        st.write(f"비고: {res['notes']}")
-                    st.write(f"가장 가까운 텔레포트: **{res['nearest_tp']['name']}** ({res['nearest_tp']['region_type']}) - {res['dist']}m")
+        for category in ["던전", "NPC", "텔레포트"]:
+            if results[category]:
+                st.markdown(f"## {category}")
+                for res in results[category]:
+                    st.markdown(f"### [{res['type']}] {res['name']}")
+                    st.code(f"{res['name']} @ {res['location']}")
+                    st.write(f"위치: {res['location']}")
 
-                elif res["type"] == "던전":
-                    st.write(f"지역: {res['region']}")
-                    st.write(f"보상: {res['reward']}")
-                    st.write(f"가장 가까운 텔레포트: **{res['nearest_tp']['name']}** ({res['nearest_tp']['region_type']}) - {res['dist']}m")
+                    if res["type"] == "NPC":
+                        if res.get("notes"):
+                            st.write(f"비고: {res['notes']}")
+                        st.write(
+                            f"가장 가까운 텔레포트: **{res['nearest_tp']['name']}** "
+                            f"({res['nearest_tp']['region_type']}) - {res['dist']}m"
+                        )
 
-                elif res["type"] == "텔레포트":
-                    st.write(f"지역 구분: {res['region_type']}")
+                    elif res["type"] == "던전":
+                        st.write(f"지역: {res['region']}")
+                        st.write(f"보상: {res['reward']}")
+                        st.write(
+                            f"가장 가까운 텔레포트: **{res['nearest_tp']['name']}** "
+                            f"({res['nearest_tp']['region_type']}) - {res['dist']}m"
+                        )
 
-                st.markdown("---")
+                    elif res["type"] == "텔레포트":
+                        st.write(f"지역 구분: {res['region_type']}")
 
-    st.session_state.search_triggered = False  # 검색 완료 후 초기화
+                    st.markdown("---")
+
+    st.session_state.search_triggered = False
+
