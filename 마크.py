@@ -192,4 +192,49 @@ if st.session_state.search_triggered or st.session_state.keyword == "":
                 st.markdown("---")
 
     st.session_state.search_triggered = False  # 검색 완료 후 초기화
+import streamlit as st
+import math
+
+# ------------------ 거리 계산 함수 ------------------
+def get_nearest_teleport(target_location):
+    def euclidean(loc1, loc2):
+        return math.sqrt(sum((a - b) ** 2 for a, b in zip(loc1, loc2)))
+    nearest = min(data["teleports"], key=lambda t: euclidean(t["location"], target_location))
+    distance = euclidean(nearest["location"], target_location)
+    return nearest, round(distance)
+
+
+# ------------------ Streamlit UI ------------------
+st.set_page_config(page_title="룬제로 검색기", layout="wide")
+st.title("룬제로 검색기")
+
+# 사이드바 탭
+st.sidebar.title("항목 목록")
+menu = st.sidebar.radio("분류 선택", ["던전", "NPC", "텔레포트"])
+
+# 항목 리스트 만들기
+item_names = [item["name"] for item in data[menu.lower() + "s"]]
+selected_name = st.sidebar.selectbox(f"{menu} 목록", item_names)
+
+# 선택된 항목 정보 찾기
+selected_item = next((item for item in data[menu.lower() + "s"] if item["name"] == selected_name), None)
+
+if selected_item:
+    st.markdown(f"## [{menu}] {selected_item['name']}")
+    st.code(f"{selected_item['name']} @ {selected_item['location']}")
+    st.write(f"위치: `{selected_item['location']}`")
+
+    if menu == "던전":
+        st.write(f"지역: `{selected_item.get('region', '')}`")
+        st.write(f"보상: `{selected_item.get('reward', '')}`")
+        nearest_tp, dist = get_nearest_teleport(selected_item["location"])
+        st.write(f"가장 가까운 텔레포트: **{nearest_tp['name']}** ({nearest_tp['region_type']}) - {dist}m")
+
+    elif menu == "NPC":
+        st.write(f"비고: `{selected_item.get('notes', '없음')}`")
+        nearest_tp, dist = get_nearest_teleport(selected_item["location"])
+        st.write(f"가장 가까운 텔레포트: **{nearest_tp['name']}** ({nearest_tp['region_type']}) - {dist}m")
+
+    elif menu == "텔레포트":
+        st.write(f"지역 구분: `{selected_item.get('region_type', '')}`")
 
