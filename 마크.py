@@ -152,12 +152,12 @@ with center:
     input_col, button_col = st.columns([5, 1]) 
     with input_col:
         st.text_input(
-            label="검색어", 
-            key="keyword", 
-            placeholder="검색어를 입력하세요 (엔터 또는 검색 버튼)"
-            label_visibility="collapsed", 
-            on_change=trigger_search
-        )
+        label="", 
+        key="keyword", 
+        placeholder="검색어를 입력하세요 (엔터 또는 검색 버튼)",
+        label_visibility="collapsed", 
+        on_change=trigger_search
+    )
     with button_col:
         st.button("검색", on_click=trigger_search)
 
