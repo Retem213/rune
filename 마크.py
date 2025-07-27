@@ -126,12 +126,12 @@ if "search_triggered" not in st.session_state:
 # ------------------ 검색 트리거 함수 ------------------
 def trigger_search():
     st.session_state["search_triggered"] = True
-
+    
 # ------------------ Streamlit UI ------------------
-st.set_page_config(layout="wide")
-st.title("룬제로 검색기")
+import streamlit as st
 
-# 상태 변수 초기화
+st.set_page_config(layout="wide")
+
 if "keyword" not in st.session_state:
     st.session_state["keyword"] = ""
 if "search_triggered" not in st.session_state:
@@ -140,10 +140,13 @@ if "search_triggered" not in st.session_state:
 def trigger_search():
     st.session_state["search_triggered"] = True
 
-# 가운데 정렬: 좌측 여백 - 중앙 컬럼 - 우측 여백
+
 left, center, right = st.columns([1, 2, 1])
 
 with center:
+
+    st.markdown("<h1 style='text-align: center;'>룬제로 검색기</h1>", unsafe_allow_html=True)
+
     st.markdown("**검색어를 입력하세요 (엔터 또는 검색 버튼)**")
     
     input_col, button_col = st.columns([5, 1]) 
@@ -159,7 +162,7 @@ with center:
 
     st.button("모든 항목 보기", key="show_all", on_click=lambda: setattr(st.session_state, "keyword", ""))
 
-# ------------------ 검색 결과 출력 ------------------
+
 if st.session_state.search_triggered or st.session_state.keyword == "":
     keyword = st.session_state.keyword
     results = search_data(keyword)
