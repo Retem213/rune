@@ -128,27 +128,31 @@ def search_data(keyword):
 # ------------------ Streamlit UI ------------------
 st.title("룬제로 검색기")
 
-
+# 세션 상태 초기화
 if "keyword" not in st.session_state:
     st.session_state.keyword = ""
 if "search_triggered" not in st.session_state:
     st.session_state.search_triggered = False
 
+# 검색 실행 함수
 def trigger_search():
     st.session_state.search_triggered = True
 
+# 검색 입력 및 버튼 배치
+col1, col2 = st.columns([4, 1])
+col1.text_input("검색어를 입력하세요 (엔터 또는 검색 버튼)",
+                value=st.session_state.keyword,
+                key="keyword",
+                on_change=trigger_search)
+search_btn = col2.button("🔍 검색", on_click=trigger_search)
 
-st.text_input("검색어를 입력하세요 (던전, 재료, NPC, 텔레포트 등)",
-              value=st.session_state.keyword,
-              key="keyword",
-              on_change=trigger_search)
+# 모든 항목 보기 버튼
+show_all = st.button("📋 모든 항목 보기")
 
-col1, _ = st.columns(2)
-show_all = col1.button("모든 항목 보기")
-
+# 결과 처리
 if show_all or st.session_state.search_triggered:
     keyword = st.session_state.keyword
-    results = search_data(keyword if not show_all else "")
+    results = search_data("" if show_all else keyword)
 
     total_count = sum(len(lst) for lst in results.values())
     st.info(f"총 {total_count}개 결과가 검색되었습니다.")
@@ -159,7 +163,6 @@ if show_all or st.session_state.search_triggered:
             for res in results[category]:
                 st.markdown(f"### [{res['type']}] {res['name']}")
                 st.code(f"{res['name']} @ {res['location']}")
-
                 st.write(f"위치: {res['location']}")
 
                 if res["type"] == "NPC":
@@ -177,7 +180,7 @@ if show_all or st.session_state.search_triggered:
 
                 st.markdown("---")
 
-    st.session_state.search_triggered = False  # 검색 후 초기화
+    st.session_state.search_triggered = False
 
 elif st.session_state.search_triggered and not st.session_state.keyword.strip():
     st.warning("검색어를 입력해주세요.")
