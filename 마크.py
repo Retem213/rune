@@ -4,6 +4,7 @@ import plotly.express as px
 import pandas as pd
 import os
 
+
 # ------------------ 데이터 정의 ------------------
 data = {
     "dungeons": [
@@ -103,14 +104,19 @@ def search_data(keyword, data):
 
 # ------------------ 가상 지도  ------------------
 def plot_virtual_map_interactive(data):
-    
-    show_dungeon = st.checkbox("던전 표시", value=True)
-    show_npc = st.checkbox("NPC 표시", value=True)
 
+    col1, col2 = st.columns(2)
+    with col1:
+        show_dungeon = st.checkbox("던전 표시", value=True)
+    with col2:
+        show_npc = st.checkbox("NPC 표시", value=True)
+
+    # 데이터 구성
     dungeon_points = [
         {
             "이름": d["name"],
             "X": d["location"][0],
+            "Y": d["location"][1],
             "Z": d["location"][2],
             "종류": "던전",
             "지역": d["region"],
@@ -123,6 +129,7 @@ def plot_virtual_map_interactive(data):
         {
             "이름": n["name"],
             "X": n["location"][0],
+            "Y": n["location"][1],
             "Z": n["location"][2],
             "종류": "NPC",
             "비고": n.get("notes", "")
@@ -147,21 +154,32 @@ def plot_virtual_map_interactive(data):
         hover_data={
             "이름": True,
             "X": True,
+            "Y": True, 
             "Z": True,
             "종류": True,
-            "지역": True if show_dungeon else False,
-            "보상": True if show_dungeon else False,
-            "비고": True if show_npc else False
+            "지역": "지역" in df.columns,
+            "보상": "보상" in df.columns,
+            "비고": "비고" in df.columns
         }
     )
 
+
     fig.update_traces(textposition="top center", marker=dict(size=8))
+
+
+    x_min, x_max = df["X"].min(), df["X"].max()
+    z_min, z_max = df["Z"].min(), df["Z"].max()
+    padding = 20  
     fig.update_layout(
-        height=700,
-        dragmode="pan"
+        height=600,
+        dragmode="pan",
+        xaxis=dict(range=[x_min - padding, x_max + padding]),
+        yaxis=dict(range=[z_min - padding, z_max + padding])
     )
 
+
     st.plotly_chart(fig, use_container_width=True, config={"scrollZoom": True})
+
 
 # ------------------ Streamlit ------------------
 st.set_page_config(layout="wide")
