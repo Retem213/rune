@@ -71,15 +71,13 @@ data = {
     ]
 }
 
-
-
 # ------------------ 한글 폰트 설정 ------------------
-font_path = "NanumGothic.ttf"  # 프로젝트 폴더에 위치시켜 주세요
+font_path = "/mnt/data/NEXON_WARHAVEN_REGULAR.TTF"  # 업로드한 워헤이븐 폰트 사용
 if os.path.exists(font_path):
     font_prop = fm.FontProperties(fname=font_path)
     plt.rcParams['font.family'] = font_prop.get_name()
 else:
-    st.warning("한글 폰트 파일(NanumGothic.ttf)을 찾을 수 없습니다. 한글이 깨질 수 있습니다.")
+    st.warning("폰트 파일(NEXON_WARHAVEN_REGULAR.TTF)을 찾을 수 없습니다. 한글이 깨질 수 있습니다.")
 
 # ------------------ 거리 계산 ------------------
 def get_nearest_teleport(location, teleports):
@@ -111,34 +109,35 @@ def search_data(keyword, data):
 
 # ------------------ 가상 지도 시각화 함수 ------------------
 def plot_virtual_map(data):
-    fig, ax = plt.subplots(figsize=(8, 6))  # 보기 좋게 조정
+    fig, ax = plt.subplots(figsize=(8, 6))  # 지도 크기 조정
     ax.set_facecolor("white")
-    ax.set_title("가상 지도 (던전 & NPC 위치)", fontsize=14)
-    ax.set_xlabel("X 좌표")
-    ax.set_ylabel("Z 좌표")
+    ax.set_title("가상 지도 (던전 & NPC 위치)", fontsize=14, fontproperties=font_prop)
+    ax.set_xlabel("X 좌표", fontproperties=font_prop)
+    ax.set_ylabel("Z 좌표", fontproperties=font_prop)
     ax.grid(True, linestyle='--', alpha=0.3)
 
-    # 던전 표시
+    # 던전 위치 표시
     for dungeon in data["dungeons"]:
         x, _, z = dungeon["location"]
         ax.plot(x, z, 'ro')
-        ax.text(x, z, f"{dungeon['name']}", fontsize=7, color='darkred', ha='left', va='bottom')
+        ax.text(x, z, dungeon["name"], fontsize=7, color='darkred', ha='left', va='bottom', fontproperties=font_prop)
 
-    # NPC 표시
+    # NPC 위치 표시
     for npc in data["npcs"]:
         x, _, z = npc["location"]
         ax.plot(x, z, 'bo')
-        ax.text(x, z, f"{npc['name']}", fontsize=7, color='blue', ha='left', va='top')
+        ax.text(x, z, npc["name"], fontsize=7, color='blue', ha='left', va='top', fontproperties=font_prop)
 
-    ax.legend(["던전", "NPC"], loc='upper left', bbox_to_anchor=(1, 1))
+    ax.legend(["던전", "NPC"], loc='upper left', bbox_to_anchor=(1, 1), prop=font_prop)
     st.pyplot(fig)
 
-# ------------------ Streamlit ------------------
+# ------------------ Streamlit 설정 ------------------
 st.set_page_config(layout="wide")
 st.sidebar.title("메뉴")
 
 tab_option = st.sidebar.radio("탭 선택", ["검색기능", "카테고리", "좌표 검색", "가상 지도"])
 
+# ------------------ 검색 기능 ------------------
 if tab_option == "검색기능":
     st.title("룬제로 검색기")
 
@@ -182,6 +181,7 @@ if tab_option == "검색기능":
                     st.markdown("---")
         st.session_state.search_triggered = False
 
+# ------------------ 카테고리 기능 ------------------
 elif tab_option == "카테고리":
     st.title("카테고리 보기")
 
@@ -208,11 +208,12 @@ elif tab_option == "카테고리":
                 for d in related:
                     st.write(f"- {d['name']} @ {d['region']}")
 
+# ------------------ 좌표 검색 기능 ------------------
 elif tab_option == "좌표 검색":
     st.title("좌표 기반 텔레포트 찾기")
 
     x = st.number_input("X 좌표", value=0)
-    y = st.number_input("Y 좌표", value=70)
+    y = st.number_input("Y 좌표", value=0)
     z = st.number_input("Z 좌표", value=0)
 
     if st.button("가까운 텔레포트 찾기"):
@@ -220,6 +221,7 @@ elif tab_option == "좌표 검색":
         nearest, dist = get_nearest_teleport(location, data["teleports"])
         st.success(f"가장 가까운 텔레포트는 **{nearest['name']}** ({nearest['region_type']}) - {dist}m")
 
+# ------------------ 가상 지도 기능 ------------------
 elif tab_option == "가상 지도":
     st.title("가상 지도 시각화")
     st.markdown("**하얀 배경에 던전 및 NPC 위치가 점으로 표시됩니다.**")
