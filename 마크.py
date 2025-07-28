@@ -102,6 +102,8 @@ def search_data(keyword, data):
 
     return results
 
+# ------------------ 지도 기능 ------------------
+
 def plot_virtual_map_interactive(data):
     col1, col2, col3 = st.columns(3)
     with col1:
@@ -111,92 +113,102 @@ def plot_virtual_map_interactive(data):
     with col3:
         show_tp = st.checkbox("텔레포트 표시", value=True)
 
-    dungeon_points = [
-        {
-            "이름": d["name"],
-            "X": d["location"][0],
-            "Y": d["location"][1],
-            "Z": d["location"][2],
-            "종류": "던전",
-            "지역": d["region"],
-            "보상": d["reward"]
-        }
-        for d in data["dungeons"]
-    ] if show_dungeon else []
+    import plotly.graph_objects as go
+    fig = go.Figure()
 
-    npc_points = [
-        {
-            "이름": n["name"],
-            "X": n["location"][0],
-            "Y": n["location"][1],
-            "Z": n["location"][2],
-            "종류": "NPC",
-            "비고": n.get("notes", "")
-        }
-        for n in data["npcs"]
-    ] if show_npc else []
+    if show_dungeon:
+        df_dungeon = pd.DataFrame([
+            {
+                "이름": d["name"],
+                "X": d["location"][0],
+                "Y": d["location"][1],
+                "Z": d["location"][2],
+                "지역": d["region"],
+                "보상": d["reward"]
+            } for d in data["dungeons"]
+        ])
+        fig.add_trace(go.Scatter(
+            x=df_dungeon["X"],
+            y=df_dungeon["Z"],
+            mode="markers+text",
+            name="던전",
+            marker=dict(color="red", size=8),
+            text=df_dungeon["이름"],
+            textposition="top center",
+            customdata=df_dungeon[["X", "Y", "Z", "이름", "지역", "보상"]],
+            hovertemplate=(
+                "X=%{customdata[0]}<br>"
+                "Y=%{customdata[1]}<br>"
+                "Z=%{customdata[2]}<br>"
+                "이름=%{customdata[3]}<br>"
+                "지역=%{customdata[4]}<br>"
+                "보상=%{customdata[5]}"
+            )
+        ))
 
-    tp_points = [
-        {
-            "이름": tp["name"],
-            "X": tp["location"][0],
-            "Y": tp["location"][1],
-            "Z": tp["location"][2],
-            "종류": "텔레포트",
-            "지역구분": tp["region_type"]
-        }
-        for tp in data["teleports"]
-    ] if show_tp else []
+    if show_npc:
+        df_npc = pd.DataFrame([
+            {
+                "이름": n["name"],
+                "X": n["location"][0],
+                "Y": n["location"][1],
+                "Z": n["location"][2],
+                "비고": n.get("notes", "")
+            } for n in data["npcs"]
+        ])
+        fig.add_trace(go.Scatter(
+            x=df_npc["X"],
+            y=df_npc["Z"],
+            mode="markers+text",
+            name="NPC",
+            marker=dict(color="yellow", size=8),
+            text=df_npc["이름"],
+            textposition="top center",
+            customdata=df_npc[["X", "Y", "Z", "이름", "비고"]],
+            hovertemplate=(
+                "X=%{customdata[0]}<br>"
+                "Y=%{customdata[1]}<br>"
+                "Z=%{customdata[2]}<br>"
+                "이름=%{customdata[3]}<br>"
+                "비고=%{customdata[4]}"
+            )
+        ))
 
-    df = pd.DataFrame(dungeon_points + npc_points + tp_points)
+    if show_tp:
+        df_tp = pd.DataFrame([
+            {
+                "이름": tp["name"],
+                "X": tp["location"][0],
+                "Y": tp["location"][1],
+                "Z": tp["location"][2],
+                "지역구분": tp["region_type"]
+            } for tp in data["teleports"]
+        ])
+        fig.add_trace(go.Scatter(
+            x=df_tp["X"],
+            y=df_tp["Z"],
+            mode="markers+text",
+            name="텔레포트",
+            marker=dict(color="purple", size=8),
+            text=df_tp["이름"],
+            textposition="top center",
+            customdata=df_tp[["X", "Y", "Z", "이름", "지역구분"]],
+            hovertemplate=(
+                "X=%{customdata[0]}<br>"
+                "Y=%{customdata[1]}<br>"
+                "Z=%{customdata[2]}<br>"
+                "이름=%{customdata[3]}<br>"
+                "지역구분=%{customdata[4]}"
+            )
+        ))
 
-    if df.empty:
-        st.warning("표시할 데이터가 없습니다. 체크박스를 선택하세요.")
+    if not fig.data:
+        st.warning("표시할 데이터가 없습니다.")
         return
-
-    fig = px.scatter(
-        df,
-        x="X",
-        y="Z",
-        color="종류",
-        text="이름",
-        color_discrete_map={
-            "던전": "red",
-            "NPC": "yellow",
-            "텔레포트": "purple"
-        },
-    )
-
-    fig.update_traces(
-        marker=dict(size=8),
-        textposition="top center",
-        customdata=df[
-            ["X", "Y", "Z", "이름",
-             "지역" if "지역" in df else "지역구분" if "지역구분" in df else "비고",
-             "보상" if "보상" in df else ""]
-        ]
-    )
-
-    fig.update_traces(
-        hovertemplate=(
-            "X=%{customdata[0]}<br>"
-            "Y=%{customdata[1]}<br>"
-            "Z=%{customdata[2]}<br>"
-            "이름=%{customdata[3]}<br>"
-            "지역/비고=%{customdata[4]}<br>"
-            "보상=%{customdata[5]}"
-        )
-    )
-
-    x_min, x_max = df["X"].min(), df["X"].max()
-    z_min, z_max = df["Z"].min(), df["Z"].max()
-    padding = 20
 
     fig.update_layout(
         height=700,
         dragmode="pan",
-        xaxis=dict(range=[x_min - padding, x_max + padding]),
-        yaxis=dict(range=[z_min - padding, z_max + padding])
     )
 
     st.plotly_chart(fig, use_container_width=True, config={"scrollZoom": True})
