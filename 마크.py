@@ -1,6 +1,5 @@
 import streamlit as st
 import math
-import matplotlib.font_manager as fm
 import plotly.express as px
 import pandas as pd
 import os
@@ -72,14 +71,7 @@ data = {
     ]
 }
 
-# ------------------ 한글 폰트 설정 ------------------
-font_path = "/mnt/data/NEXON_WARHAVEN_REGULAR.TTF"
-if os.path.exists(font_path):
-    font_prop = fm.FontProperties(fname=font_path)
-    font_name = font_prop.get_name()
-else:
-    font_prop = fm.FontProperties()
-    font_name = font_prop.get_name()
+
 
 # ------------------ 거리 계산 ------------------
 def get_nearest_teleport(location, teleports):
@@ -88,7 +80,7 @@ def get_nearest_teleport(location, teleports):
     nearest = min(teleports, key=lambda t: euclidean(t["location"], location))
     return nearest, round(euclidean(nearest["location"], location))
 
-# ------------------ 검색 함수 ------------------
+# ------------------ 검색 기능 ------------------
 def search_data(keyword, data):
     keyword = keyword.strip().lower()
     results = {"던전": [], "NPC": [], "텔레포트": []}
@@ -109,7 +101,7 @@ def search_data(keyword, data):
 
     return results
 
-# ------------------ 가상 지도 시각화 ------------------
+# ------------------ 가상 지도  ------------------
 def plot_virtual_map_interactive(data):
     dungeon_points = [
         {"이름": d["name"], "X": d["location"][0], "Z": d["location"][2], "종류": "던전"}
@@ -131,16 +123,19 @@ def plot_virtual_map_interactive(data):
         color_discrete_map={"던전": "red", "NPC": "blue"}
     )
     fig.update_traces(textposition="top center", marker=dict(size=8))
-    fig.update_layout(height=700, font=dict(family=font_name, size=12))
+    fig.update_layout(
+        height=700,
+        dragmode="pan" 
+    )
     st.plotly_chart(fig, use_container_width=True)
 
-# ------------------ Streamlit 설정 ------------------
+# ------------------ Streamlit ------------------
 st.set_page_config(layout="wide")
 st.sidebar.title("메뉴")
 
 tab_option = st.sidebar.radio("탭 선택", ["검색기능", "카테고리", "좌표 검색", "가상 지도"])
 
-# ------------------ 검색 기능 ------------------
+# ------------------ 검색 탭 ------------------
 if tab_option == "검색기능":
     st.title("룬제로 검색기")
 
@@ -184,10 +179,9 @@ if tab_option == "검색기능":
                     st.markdown("---")
         st.session_state.search_triggered = False
 
-# ------------------ 카테고리 기능 ------------------
+# ------------------ 카테고리 탭 ------------------
 elif tab_option == "카테고리":
     st.title("카테고리 보기")
-
     category = st.radio("카테고리 선택", ["던전", "재료"])
 
     if category == "던전":
@@ -211,7 +205,7 @@ elif tab_option == "카테고리":
                 for d in related:
                     st.write(f"- {d['name']} @ {d['region']}")
 
-# ------------------ 좌표 검색 기능 ------------------
+# ------------------ 좌표 기반 탭 ------------------
 elif tab_option == "좌표 검색":
     st.title("좌표 기반 텔레포트 찾기")
 
@@ -224,13 +218,10 @@ elif tab_option == "좌표 검색":
         nearest, dist = get_nearest_teleport(location, data["teleports"])
         st.success(f"가장 가까운 텔레포트는 **{nearest['name']}** ({nearest['region_type']}) - {dist}m")
 
-# ------------------ 가상 지도 기능------------------
+# ------------------ 가상 지도 탭 ------------------
 elif tab_option == "가상 지도":
-    st.title("가상 지도 시각화 (확대/축소 가능)")
-    st.markdown("**던전과 NPC의 위치가 인터랙티브하게 표시됩니다.**")
+    st.title("가상 지도 시각화 (드래그 이동 / 휠 줌)")
     plot_virtual_map_interactive(data)
-
-
 
 
 
