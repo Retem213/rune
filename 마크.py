@@ -194,22 +194,34 @@ if tab_option == "검색기능":
         st.session_state["keyword"] = ""
     if "search_triggered" not in st.session_state:
         st.session_state["search_triggered"] = False
+    if "show_all" not in st.session_state:
+        st.session_state["show_all"] = False
 
     def trigger_search():
         st.session_state["search_triggered"] = True
+        st.session_state["show_all"] = False
 
-    col_input, col_button = st.columns([5, 1])
-    with col_input:
-        st.text_input("검색어", key="keyword", placeholder="검색어 입력 후 엔터", on_change=trigger_search)
-    with col_button:
-        st.button("검색", on_click=trigger_search)
+    def show_all_items():
+        st.session_state["show_all"] = True
+        st.session_state["search_triggered"] = False
+        st.session_state["keyword"] = ""
 
-    st.button("모든 항목 보기", key="show_all", on_click=lambda: setattr(st.session_state, "keyword", ""))
+    with st.form(key="search_form"):
+        col_input, col_button = st.columns([5, 1])
+        with col_input:
+            st.text_input(
+                "검색어",
+                key="keyword",
+                placeholder="검색어 입력 후 엔터"
+            )
+        with col_button:
+            st.form_submit_button("검색", on_click=trigger_search)
 
-    if st.session_state.search_triggered or st.session_state.keyword == "":
+    st.button("모든 항목 보기", on_click=show_all_items)
+
+    if st.session_state.search_triggered or st.session_state.show_all:
         results = search_data(st.session_state.keyword, data)
         total = sum(len(results[k]) for k in results)
-        st.info(f"총 {total}개 결과")
 
         for category in ["던전", "NPC", "텔레포트"]:
             if results[category]:
@@ -228,7 +240,10 @@ if tab_option == "검색기능":
                     elif item["type"] == "텔레포트":
                         st.write(f"지역 구분: {item['region_type']}")
                     st.markdown("---")
+
         st.session_state.search_triggered = False
+        st.session_state.show_all = False
+
 
 # ------------------ 카테고리 탭 ------------------
 elif tab_option == "카테고리":
