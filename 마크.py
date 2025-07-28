@@ -8,29 +8,29 @@ data = {
         {"name": "슬라임 킹", "location": [1214, 10, -600], "region": "", "reward": ""},
         {"name": "변이된 언데드", "location": [1702, 10, -870], "region": "오염된 땅", "reward": ""},
         {"name": "슬라임 기사", "location": [1632, 10, -690], "region": "끈적이는 땅", "reward": ""},
-        {"name": "란", "location": [1154, 9, -1340], "region": "", "reward": "2,000 G"},
-        {"name": "변이된 스켈레톤", "location": [1290, 22, -1380], "region": "", "reward": "2,000 G"},
+        {"name": "란", "location": [1154, 9, -1340], "region": "", "reward": "2000G"},
+        {"name": "변이된 스켈레톤", "location": [1290, 22, -1380], "region": "", "reward": "2000G"},
         {"name": "말괄량이 마법사 데이비", "location": [1050, 10, -1155], "region": "", "reward": ""},
-        {"name": "전사 브루스", "location": [1110, 75, -1214], "region": "낡은 검의 은신처", "reward": "3,000 G"},
-        {"name": "펜리르", "location": [1180, 75, -1130], "region": "고독한 늑대의 요람", "reward": "5,000 G, 영험한 힘이 깃든 늑대 이빨, 미약한 힘이 담긴 영혼"},
-        {"name": "슬라임 퀸", "location": [1355, 70, -1114], "region": "부패의 모체", "reward": "3,000 G, 슬라임 퀸의 핵"},
-        {"name": "포레스트 골렘", "location": [1100, 78, -1100], "region": "대자연의 수호전", "reward": "3,000 G, 골렘의 핵"},
-        {"name": "야만의 군체", "location": [-1600, 0, -1197], "region": "", "reward": "3,000 G, 부러진 대검"},
-        {"name": "흑량", "location": [1630, 81, -690], "region": "잿빛 사냥꾼의 영역", "reward": "3,000 G,  검은 이리 가죽"},
-        {"name": "고블린 라이더 & 와일드 보어 킹", "location": [1660, 69, -1200], "region": "야만의 군체", "reward": "3,000 G, 고블린라이더의 깃발"},
-        {"name": "야만 전사 헬턴", "location": [1532, 16, -790], "region": "야만의 격전지", "reward": "3,000 G, 야만전사 도끼"},
-        {"name": "침묵의 검무 키에린", "location": [114, 67, 611], "region": "저무는 칼날의 길", "reward": "5,000 G, 검의 인식처, 미약한 힘이 담긴 영혼"},
-        {"name": "봉인된 문장 그린힐름", "location": [-472, 71, 502], "region": "봉인된 성소", "reward": "5,000 G, 페데도트의 문장, 미약한 힘이 담긴 영혼"},
-        {"name": "사자혼종", "location": [-160, 69, 74], "region": "혼돈의 미궁", "reward": "5,000 G, 거친 사자갈기, 미약한 힘이 담긴 영혼"},
-        {"name": "윌시의 파괴자 울라프", "location": [4, 70, 23], "region": "피엄닉 불모지", "reward": "5,000 G, 선봉장의 허리띠, 미약한 힘이 담긴 영혼"},
-        {"name": "철혈의 심판자 타르콘", "location": [197, 73, 33], "region": "심판의 보루", "reward": "5,500 G, 망치자루, 미약한 힘이 담긴 영혼"},
-        {"name": "악마 기사 베아르논", "location": [-654, 69, 217], "region": "파멸의 선봉대", "reward": "5,500 G, 번개조각, 미약한 힘이 담긴 영혼"},
-        {"name": "심연의 기사 아르반델", "location": [-335, 72, -65], "region": "망각의 성채", "reward": "5,500 G, 심연을 비추는 등불, 미약한 힘이 담긴 영혼"},
-        {"name": "타락한 성직자 시네리아(심연을 걷는자)", "location": [-117, 67, 978], "region": "그림자 예배당", "reward": "6,000 G, 부러진 낫, 미약한 힘이 담긴 영혼"},
-        {"name": "꽃의 왈츠 플뢰리스", "location": [-340, 70, 950], "region": "가시 장미 정원", "reward": "6,000 G, 끝없는 개화, 미약한 힘이 담긴 영혼", "notes": "y좌표 임시"},
-        {"name": "비열한 그림자 셀렌", "location": [556, 72, 113], "region": "침묵의 회랑", "reward": "6,000 G, 목공 도구, 미약한 힘이 담긴 영혼", "notes": ""},
-        {"name": "폭풍의 창 오닉스", "location": [336, 70, 248], "region": "꿰뚫는 폭퐁의 눈", "reward": "5,000 G, 꺽여버린 창, 미약한 힘이 담긴 영혼", "notes": ""},
-        {"name": "저주 설계자 모르모트", "location": [-226, 72, 369], "region": "공허의 전당", "reward": "5,000 G, 공허한 운석, 미약한 힘이 담긴 영혼", "notes": ""},
+        {"name": "전사 브루스", "location": [1110, 75, -1214], "region": "낡은 검의 은신처", "reward": "3000G"},
+        {"name": "펜리르", "location": [1180, 75, -1130], "region": "고독한 늑대의 요람", "reward": "5000G, 영험한 힘이 깃든 늑대 이빨, 미약한 힘이 담긴 영혼"},
+        {"name": "슬라임 퀸", "location": [1355, 70, -1114], "region": "부패의 모체", "reward": "3000G, 슬라임 퀸의 핵"},
+        {"name": "포레스트 골렘", "location": [1100, 78, -1100], "region": "대자연의 수호전", "reward": "3000G, 골렘의 핵"},
+        {"name": "야만의 군체", "location": [-1600, 0, -1197], "region": "", "reward": "3000G, 부러진 대검"},
+        {"name": "흑량", "location": [1630, 81, -690], "region": "잿빛 사냥꾼의 영역", "reward": "3000G,  검은 이리 가죽"},
+        {"name": "고블린 라이더 & 와일드 보어 킹", "location": [1660, 69, -1200], "region": "야만의 군체", "reward": "3000G, 고블린라이더의 깃발"},
+        {"name": "야만 전사 헬턴", "location": [1532, 16, -790], "region": "야만의 격전지", "reward": "3000G, 야만전사 도끼"},
+        {"name": "침묵의 검무 키에린", "location": [114, 67, 611], "region": "저무는 칼날의 길", "reward": "5000G, 검의 인식처, 미약한 힘이 담긴 영혼"},
+        {"name": "봉인된 문장 그린힐름", "location": [-472, 71, 502], "region": "봉인된 성소", "reward": "5000G, 페데도트의 문장, 미약한 힘이 담긴 영혼"},
+        {"name": "사자혼종", "location": [-160, 69, 74], "region": "혼돈의 미궁", "reward": "5000G, 거친 사자갈기, 미약한 힘이 담긴 영혼"},
+        {"name": "윌시의 파괴자 울라프", "location": [4, 70, 23], "region": "피엄닉 불모지", "reward": "5000G, 선봉장의 허리띠, 미약한 힘이 담긴 영혼"},
+        {"name": "철혈의 심판자 타르콘", "location": [197, 73, 33], "region": "심판의 보루", "reward": "5500G, 망치자루, 미약한 힘이 담긴 영혼"},
+        {"name": "악마 기사 베아르논", "location": [-654, 69, 217], "region": "파멸의 선봉대", "reward": "5500G, 번개조각, 미약한 힘이 담긴 영혼"},
+        {"name": "심연의 기사 아르반델", "location": [-335, 72, -65], "region": "망각의 성채", "reward": "5500G, 심연을 비추는 등불, 미약한 힘이 담긴 영혼"},
+        {"name": "타락한 성직자 시네리아(심연을 걷는자)", "location": [-117, 67, 978], "region": "그림자 예배당", "reward": "6000G, 부러진 낫, 미약한 힘이 담긴 영혼"},
+        {"name": "꽃의 왈츠 플뢰리스", "location": [-340, 70, 950], "region": "가시 장미 정원", "reward": "6000G, 끝없는 개화, 미약한 힘이 담긴 영혼", "notes": "y좌표 임시"},
+        {"name": "비열한 그림자 셀렌", "location": [556, 72, 113], "region": "침묵의 회랑", "reward": "6000G, 목공 도구, 미약한 힘이 담긴 영혼", "notes": ""},
+        {"name": "폭풍의 창 오닉스", "location": [336, 70, 248], "region": "꿰뚫는 폭퐁의 눈", "reward": "5000G, 꺽여버린 창, 미약한 힘이 담긴 영혼", "notes": ""},
+        {"name": "저주 설계자 모르모트", "location": [-226, 72, 369], "region": "공허의 전당", "reward": "5000G, 공허한 운석, 미약한 힘이 담긴 영혼", "notes": ""},
         {"name": "키메라워리어", "location": [-158, 70, 73], "region": "혼동의 미궁", "reward": "", "notes": "사자혼종에서 변경된 보스"},
     ],
     "npcs": [
@@ -69,7 +69,6 @@ data = {
 }
 
 
-
 # ------------------ 거리 계산 ------------------
 def get_nearest_teleport(location, teleports):
     def euclidean(a, b):
@@ -77,73 +76,114 @@ def get_nearest_teleport(location, teleports):
     nearest = min(teleports, key=lambda t: euclidean(t["location"], location))
     return nearest, round(euclidean(nearest["location"], location))
 
+# ------------------ 검색 함수 ------------------
+def search_data(keyword, data):
+    keyword = keyword.strip().lower()
+    results = {"던전": [], "NPC": [], "텔레포트": []}
 
-# ------------------ 보상 재료 리스트 추출 ------------------
-def extract_unique_rewards(dungeons):
-    all_rewards = []
-    for d in dungeons:
-        rewards = d.get("reward", "").split(",")
-        for r in rewards:
-            r = r.strip()
-            if r and r not in all_rewards:
-                all_rewards.append(r)
-    return all_rewards
+    for npc in data["npcs"]:
+        if keyword in npc["name"].lower() or keyword in npc.get("notes", "").lower() or keyword == "":
+            nearest, dist = get_nearest_teleport(npc["location"], data["teleports"])
+            results["NPC"].append({**npc, "type": "NPC", "nearest_tp": nearest, "dist": dist})
 
+    for d in data["dungeons"]:
+        if keyword in d["name"].lower() or keyword in d["region"].lower() or keyword in d["reward"].lower() or keyword == "":
+            nearest, dist = get_nearest_teleport(d["location"], data["teleports"])
+            results["던전"].append({**d, "type": "던전", "nearest_tp": nearest, "dist": dist})
 
-# ------------------ Streamlit 시작 ------------------
+    for tp in data["teleports"]:
+        if keyword in tp["name"].lower() or keyword in tp["region_type"].lower() or keyword == "":
+            results["텔레포트"].append({**tp, "type": "텔레포트"})
+
+    return results
+
+# ------------------ Streamlit ------------------
 st.set_page_config(layout="wide")
 
-# ------------------ 탭 분기 ------------------
-st.sidebar.title("탐색 메뉴")
-main_tab = st.sidebar.radio("탭 선택", ["카테고리", "좌표 검색"])
+# ------------------ 탭 선택 ------------------
+tab_option = st.sidebar.radio("탭 선택", ["검색기능", "카테고리", "좌표 검색"])
 
+# ------------------ 검색 기능 ------------------
+if tab_option == "검색기능":
+    st.title("룬제로 검색기")
 
-# ------------------ 카테고리 탭 ------------------
-if main_tab == "카테고리":
-    category = st.sidebar.radio("카테고리 선택", ["던전", "재료"])
+    if "keyword" not in st.session_state:
+        st.session_state["keyword"] = ""
+    if "search_triggered" not in st.session_state:
+        st.session_state["search_triggered"] = False
 
+    def trigger_search():
+        st.session_state["search_triggered"] = True
+
+    col_input, col_button = st.columns([5, 1])
+    with col_input:
+        st.text_input("검색어", key="keyword", placeholder="검색어 입력 후 엔터", on_change=trigger_search)
+    with col_button:
+        st.button("검색", on_click=trigger_search)
+
+    st.button("모든 항목 보기", key="show_all", on_click=lambda: setattr(st.session_state, "keyword", ""))
+
+    if st.session_state.search_triggered or st.session_state.keyword == "":
+        results = search_data(st.session_state.keyword, data)
+        total = sum(len(results[k]) for k in results)
+        st.info(f"총 {total}개 결과")
+
+        for category in ["던전", "NPC", "텔레포트"]:
+            if results[category]:
+                st.subheader(category)
+                for item in results[category]:
+                    st.markdown(f"### [{item['type']}] {item['name']}")
+                    st.write(f"위치: {item['location']}")
+                    if item["type"] == "던전":
+                        st.write(f"지역: {item['region']}")
+                        st.write(f"보상: {item['reward']}")
+                        st.write(f"가장 가까운 텔레포트: {item['nearest_tp']['name']} ({item['nearest_tp']['region_type']}) - {item['dist']}m")
+                    elif item["type"] == "NPC":
+                        if item.get("notes"):
+                            st.write(f"비고: {item['notes']}")
+                        st.write(f"가장 가까운 텔레포트: {item['nearest_tp']['name']} ({item['nearest_tp']['region_type']}) - {item['dist']}m")
+                    elif item["type"] == "텔레포트":
+                        st.write(f"지역 구분: {item['region_type']}")
+                    st.markdown("---")
+        st.session_state.search_triggered = False
+
+# ------------------ 카테고리 기능 ------------------
+elif tab_option == "카테고리":
+    st.title("카테고리 보기")
+
+    category = st.radio("카테고리 선택", ["던전", "재료"])
     if category == "던전":
-        dungeon_names = [d["name"] for d in data["dungeons"]]
-        selected_name = st.sidebar.selectbox("던전을 선택하세요", dungeon_names)
-
-        selected_dungeon = next((d for d in data["dungeons"] if d["name"] == selected_name), None)
-        if selected_dungeon:
-            st.header(f"[던전] {selected_dungeon['name']}")
-            st.write(f"위치: {selected_dungeon['location']}")
-            st.write(f"지역: {selected_dungeon.get('region', '')}")
-            st.write(f"보상: {selected_dungeon.get('reward', '')}")
-            if "notes" in selected_dungeon:
-                st.write(f"비고: {selected_dungeon['notes']}")
-
-            nearest_tp, dist = get_nearest_teleport(selected_dungeon["location"], data["teleports"])
-            st.write(f"가장 가까운 텔레포트: **{nearest_tp['name']}** ({nearest_tp['region_type']}) - {dist}m")
-
+        for dungeon in data["dungeons"]:
+            st.markdown(f"### {dungeon['name']}")
+            st.write(f"위치: {dungeon['location']}")
+            st.write(f"지역: {dungeon['region']}")
+            st.write(f"보상: {dungeon['reward']}")
+            st.markdown("---")
     elif category == "재료":
-        reward_items = extract_unique_rewards(data["dungeons"])
-        selected_reward = st.sidebar.selectbox("재료를 선택하세요", reward_items)
-
-        matched_dungeons = [d for d in data["dungeons"] if selected_reward in d.get("reward", "")]
-        st.subheader(f"‘{selected_reward}’ 획득 가능한 던전")
-
-        for d in matched_dungeons:
-            st.markdown(f"### {d['name']}")
-            st.write(f"위치: {d['location']}")
-            st.write(f"지역: {d.get('region', '')}")
-            st.write(f"보상: {d.get('reward', '')}")
-            nearest_tp, dist = get_nearest_teleport(d["location"], data["teleports"])
-            st.write(f"가장 가까운 텔레포트: **{nearest_tp['name']}** ({nearest_tp['region_type']}) - {dist}m")
+        reward_set = set()
+        for dungeon in data["dungeons"]:
+            for reward in dungeon["reward"].split(","):
+                reward = reward.strip()
+                if reward and not reward.endswith("G"):
+                    reward_set.add(reward)
+        for reward in sorted(reward_set):
+            st.markdown(f"### {reward}")
+            related = [d for d in data["dungeons"] if reward in d["reward"]]
+            for d in related:
+                st.write(f"- {d['name']} @ {d['region']}")
             st.markdown("---")
 
-# ------------------ 좌표 검색 탭 ------------------
-elif main_tab == "좌표 검색":
-    st.header("좌표 입력")
-    x = st.number_input("X", step=1)
-    y = st.number_input("Y", step=1)
-    z = st.number_input("Z", step=1)
+# ------------------ 좌표 검색 기능 ------------------
+elif tab_option == "좌표 검색":
+    st.title("좌표 기반 텔레포트 찾기")
 
-    if st.button("가장 가까운 텔레포트 찾기"):
-        nearest_tp, dist = get_nearest_teleport([x, y, z], data["teleports"])
-        st.success(f"가장 가까운 텔레포트는 **{nearest_tp['name']}** ({nearest_tp['region_type']}) - {dist}m")
-        st.write(f"텔레포트 위치: {nearest_tp['location']}")
+    x = st.number_input("X 좌표", value=0)
+    y = st.number_input("Y 좌표", value=70)
+    z = st.number_input("Z 좌표", value=0)
+
+    if st.button("가까운 텔레포트 찾기"):
+        location = [x, y, z]
+        nearest, dist = get_nearest_teleport(location, data["teleports"])
+        st.success(f"가장 가까운 텔레포트는 **{nearest['name']}** ({nearest['region_type']}) - {dist}m")
 
 
