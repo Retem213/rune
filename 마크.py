@@ -1,5 +1,6 @@
 import streamlit as st
 import math
+import matplotlib.pyplot as plt
 
 # ------------------ 데이터 정의 ------------------
 data = {
@@ -215,6 +216,42 @@ elif tab_option == "가상 지도":
 
     ax.legend(["던전", "NPC"])
     st.pyplot(fig)
+
+# ------------------ 가상 지도 시각화 함수 ------------------
+def plot_virtual_map(data):
+    fig, ax = plt.subplots(figsize=(8, 8))
+    ax.set_facecolor("white")
+    ax.set_title("가상 지도 (던전 & NPC 위치)", fontsize=16)
+    ax.set_xlabel("X 좌표")
+    ax.set_ylabel("Z 좌표")
+    ax.grid(True, linestyle='--', alpha=0.5)
+
+    # 던전 표시
+    for dungeon in data["dungeons"]:
+        x, _, z = dungeon["location"]
+        ax.plot(x, z, 'ro')
+        ax.text(x, z, f"{dungeon['name']}\n({x}, {z})", fontsize=7, color='red', ha='left', va='bottom')
+
+    # NPC 표시
+    for npc in data["npcs"]:
+        x, _, z = npc["location"]
+        ax.plot(x, z, 'bo')
+        ax.text(x, z, f"{npc['name']}\n({x}, {z})", fontsize=7, color='blue', ha='left', va='bottom')
+
+    st.pyplot(fig)
+
+# ------------------ Streamlit UI 구성 ------------------
+st.set_page_config(layout="wide")
+st.sidebar.title("메뉴")
+
+# 버튼으로 가상 지도 보기 선택
+show_map = st.sidebar.button("가상 지도 보기")
+
+# 버튼을 눌렀을 때 지도 표시
+if show_map:
+    st.title("가상 지도 시각화")
+    st.markdown("**하얀 배경에 던전 및 NPC 위치가 점으로 표시됩니다.**")
+    plot_virtual_map(data)
 
 
 
