@@ -1,7 +1,8 @@
 import streamlit as st
 import math
-import matplotlib.pyplot as plt
 import matplotlib.font_manager as fm
+import plotly.express as px
+import pandas as pd
 import os
 
 # ------------------ 데이터 정의 ------------------
@@ -71,16 +72,15 @@ data = {
     ]
 }
 
-
-
 # ------------------ 한글 폰트 설정 ------------------
-font_path = "/mnt/data/NEXON_WARHAVEN_REGULAR.TTF"  # 또는 다른 TTF 경로
+font_path = "/mnt/data/NEXON_WARHAVEN_REGULAR.TTF"
 if os.path.exists(font_path):
     font_prop = fm.FontProperties(fname=font_path)
-    plt.rcParams['font.family'] = font_prop.get_name()
+    font_name = font_prop.get_name()
 else:
-    st.warning("폰트 파일(NEXON_WARHAVEN_REGULAR.TTF)을 찾을 수 없습니다. 한글이 깨질 수 있습니다.")
-    font_prop = fm.FontProperties()  # 기본 폰트로 fallback
+    st.warning("폰트 파일을 찾을 수 없습니다. 기본 폰트로 대체됩니다.")
+    font_prop = fm.FontProperties()
+    font_name = font_prop.get_name()
 
 # ------------------ 거리 계산 ------------------
 def get_nearest_teleport(location, teleports):
@@ -110,27 +110,30 @@ def search_data(keyword, data):
 
     return results
 
-# ------------------ 가상 지도 시각화 함수 ------------------
-def plot_virtual_map(data):
-    fig, ax = plt.subplots(figsize=(8, 6))
-    ax.set_facecolor("white")
-    ax.set_title("가상 지도 (던전 & NPC 위치)", fontsize=14, fontproperties=font_prop)
-    ax.set_xlabel("X 좌표", fontproperties=font_prop)
-    ax.set_ylabel("Z 좌표", fontproperties=font_prop)
-    ax.grid(True, linestyle='--', alpha=0.3)
+# ------------------ 가상 지도 시각화 ------------------
+def plot_virtual_map_interactive(data):
+    dungeon_points = [
+        {"이름": d["name"], "X": d["location"][0], "Z": d["location"][2], "종류": "던전"}
+        for d in data["dungeons"]
+    ]
+    npc_points = [
+        {"이름": n["name"], "X": n["location"][0], "Z": n["location"][2], "종류": "NPC"}
+        for n in data["npcs"]
+    ]
+    df = pd.DataFrame(dungeon_points + npc_points)
 
-    for dungeon in data["dungeons"]:
-        x, _, z = dungeon["location"]
-        ax.plot(x, z, 'ro')
-        ax.text(x, z, dungeon["name"], fontsize=7, color='darkred', ha='left', va='bottom', fontproperties=font_prop)
-
-    for npc in data["npcs"]:
-        x, _, z = npc["location"]
-        ax.plot(x, z, 'bo')
-        ax.text(x, z, npc["name"], fontsize=7, color='blue', ha='left', va='top', fontproperties=font_prop)
-
-    ax.legend(["던전", "NPC"], loc='upper left', bbox_to_anchor=(1, 1), prop=font_prop)
-    st.pyplot(fig)
+    fig = px.scatter(
+        df,
+        x="X",
+        y="Z",
+        color="종류",
+        text="이름",
+        title="가상 지도 (던전 & NPC)",
+        color_discrete_map={"던전": "red", "NPC": "blue"}
+    )
+    fig.update_traces(textposition="top center", marker=dict(size=8))
+    fig.update_layout(height=700, font=dict(family=font_name, size=12))
+    st.plotly_chart(fig, use_container_width=True)
 
 # ------------------ Streamlit 설정 ------------------
 st.set_page_config(layout="wide")
@@ -222,11 +225,12 @@ elif tab_option == "좌표 검색":
         nearest, dist = get_nearest_teleport(location, data["teleports"])
         st.success(f"가장 가까운 텔레포트는 **{nearest['name']}** ({nearest['region_type']}) - {dist}m")
 
-# ------------------ 가상 지도 기능 ------------------
+# ------------------ 가상 지도 기능------------------
 elif tab_option == "가상 지도":
-    st.title("가상 지도 시각화")
-    st.markdown("**하얀 배경에 던전 및 NPC 위치가 점으로 표시됩니다.**")
-    plot_virtual_map(data)
+    st.title("가상 지도 시각화 (확대/축소 가능)")
+    st.markdown("**던전과 NPC의 위치가 인터랙티브하게 표시됩니다.**")
+    plot_virtual_map_interactive(data)
+
 
 
 
