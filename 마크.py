@@ -200,21 +200,11 @@ if tab_option == "검색기능":
 
     col_input, col_button = st.columns([5, 1])
     with col_input:
-        st.text_input(
-            "검색어",
-            key="keyword",
-            placeholder="검색어 입력 후 엔터",
-            on_change=trigger_search
-        )
+        st.text_input("검색어", key="keyword", placeholder="검색어 입력 후 엔터", on_change=trigger_search)
     with col_button:
-        st.write("") 
         st.button("검색", on_click=trigger_search)
 
-    st.button(
-        "모든 항목 보기",
-        key="show_all",
-        on_click=lambda: setattr(st.session_state, "keyword", "")
-    )
+    st.button("모든 항목 보기", key="show_all", on_click=lambda: setattr(st.session_state, "keyword", ""))
 
     if st.session_state.search_triggered or st.session_state.keyword == "":
         results = search_data(st.session_state.keyword, data)
@@ -238,8 +228,8 @@ if tab_option == "검색기능":
                     elif item["type"] == "텔레포트":
                         st.write(f"지역 구분: {item['region_type']}")
                     st.markdown("---")
-
         st.session_state.search_triggered = False
+
 # ------------------ 카테고리 탭 ------------------
 elif tab_option == "카테고리":
     st.title("카테고리 보기")
@@ -283,3 +273,6 @@ elif tab_option == "좌표 검색":
 elif tab_option == "가상 지도":
     st.title("가상 지도 시각화 (드래그 이동 / 휠 줌)")
     plot_virtual_map_interactive(data)
+
+
+
