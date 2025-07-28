@@ -188,4 +188,33 @@ elif tab_option == "좌표 검색":
         nearest, dist = get_nearest_teleport(location, data["teleports"])
         st.success(f"가장 가까운 텔레포트는 **{nearest['name']}** ({nearest['region_type']}) - {dist}m")
 
+# ------------------ 가상 지도 ------------------
+elif tab_option == "가상 지도":
+    st.title("가상 지도 (X-Z 평면)")
+
+    import matplotlib.pyplot as plt
+
+    fig, ax = plt.subplots(figsize=(10, 10))
+    ax.set_facecolor("white")
+    ax.set_title("던전 & NPC 위치 지도", fontsize=16)
+
+    # 축 설정
+    ax.set_xlabel("X 좌표")
+    ax.set_ylabel("Z 좌표")
+    ax.grid(True, linestyle='--', alpha=0.5)
+
+    for dungeon in data["dungeons"]:
+        x, _, z = dungeon["location"]
+        ax.plot(x, z, 'ro')  # red circle
+        ax.text(x, z, dungeon["name"], fontsize=8, color='darkred', ha='left', va='bottom')
+
+    for npc in data["npcs"]:
+        x, _, z = npc["location"]
+        ax.plot(x, z, 'bo')  # blue circle
+        ax.text(x, z, npc["name"], fontsize=8, color='blue', ha='left', va='top')
+
+    ax.legend(["던전", "NPC"])
+    st.pyplot(fig)
+
+
 
