@@ -103,15 +103,38 @@ def search_data(keyword, data):
 
 # ------------------ 가상 지도  ------------------
 def plot_virtual_map_interactive(data):
+    
+    show_dungeon = st.checkbox("던전 표시", value=True)
+    show_npc = st.checkbox("NPC 표시", value=True)
+
     dungeon_points = [
-        {"이름": d["name"], "X": d["location"][0], "Z": d["location"][2], "종류": "던전"}
+        {
+            "이름": d["name"],
+            "X": d["location"][0],
+            "Z": d["location"][2],
+            "종류": "던전",
+            "지역": d["region"],
+            "보상": d["reward"]
+        }
         for d in data["dungeons"]
-    ]
+    ] if show_dungeon else []
+
     npc_points = [
-        {"이름": n["name"], "X": n["location"][0], "Z": n["location"][2], "종류": "NPC"}
+        {
+            "이름": n["name"],
+            "X": n["location"][0],
+            "Z": n["location"][2],
+            "종류": "NPC",
+            "비고": n.get("notes", "")
+        }
         for n in data["npcs"]
-    ]
+    ] if show_npc else []
+
     df = pd.DataFrame(dungeon_points + npc_points)
+
+    if df.empty:
+        st.warning("표시할 데이터가 없습니다. 체크박스를 선택하세요.")
+        return
 
     fig = px.scatter(
         df,
@@ -120,12 +143,22 @@ def plot_virtual_map_interactive(data):
         color="종류",
         text="이름",
         title="가상 지도 (던전 & NPC)",
-        color_discrete_map={"던전": "red", "NPC": "blue"}
+        color_discrete_map={"던전": "red", "NPC": "blue"},
+        hover_data={
+            "이름": True,
+            "X": True,
+            "Z": True,
+            "종류": True,
+            "지역": True if show_dungeon else False,
+            "보상": True if show_dungeon else False,
+            "비고": True if show_npc else False
+        }
     )
+
     fig.update_traces(textposition="top center", marker=dict(size=8))
     fig.update_layout(
         height=700,
-        dragmode="pan"  
+        dragmode="pan"
     )
 
     st.plotly_chart(fig, use_container_width=True, config={"scrollZoom": True})
