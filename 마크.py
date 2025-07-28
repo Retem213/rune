@@ -125,9 +125,10 @@ def plot_virtual_map_interactive(data):
     fig.update_traces(textposition="top center", marker=dict(size=8))
     fig.update_layout(
         height=700,
-        dragmode="pan" 
+        dragmode="pan"  
     )
-    st.plotly_chart(fig, use_container_width=True)
+
+    st.plotly_chart(fig, use_container_width=True, config={"scrollZoom": True})
 
 # ------------------ Streamlit ------------------
 st.set_page_config(layout="wide")
