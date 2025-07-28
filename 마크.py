@@ -69,137 +69,81 @@ data = {
 }
 
 
-# ------------------ 거리 계산 함수 ------------------
-def get_nearest_teleport(target_location):
-    def euclidean(loc1, loc2):
-        return math.sqrt(sum((a - b) ** 2 for a, b in zip(loc1, loc2)))
-    nearest = min(data["teleports"], key=lambda t: euclidean(t["location"], target_location))
-    return nearest, round(euclidean(nearest["location"], target_location))
 
-# ------------------ 검색 함수 ------------------
-def search_data(keyword):
-    keyword = keyword.strip().lower()
-    results = {"던전": [], "NPC": [], "텔레포트": []}
+# ------------------ 거리 계산 ------------------
+def get_nearest_teleport(location, teleports):
+    def euclidean(a, b):
+        return math.sqrt(sum((x - y) ** 2 for x, y in zip(a, b)))
+    nearest = min(teleports, key=lambda t: euclidean(t["location"], location))
+    return nearest, round(euclidean(nearest["location"], location))
 
-    for npc in data["npcs"]:
-        if keyword in npc["name"].lower() or keyword in npc.get("notes", "").lower() or keyword == "":
-            nearest, dist = get_nearest_teleport(npc["location"])
-            results["NPC"].append({
-                "type": "NPC",
-                "name": npc["name"],
-                "location": npc["location"],
-                "notes": npc.get("notes", ""),
-                "nearest_tp": nearest,
-                "dist": dist
-            })
 
-    for d in data["dungeons"]:
-        if keyword in d["name"].lower() or keyword in d["region"].lower() or keyword in d["reward"].lower() or keyword == "":
-            nearest, dist = get_nearest_teleport(d["location"])
-            results["던전"].append({
-                "type": "던전",
-                "name": d["name"],
-                "location": d["location"],
-                "region": d["region"],
-                "reward": d["reward"],
-                "nearest_tp": nearest,
-                "dist": dist
-            })
+# ------------------ 보상 재료 리스트 추출 ------------------
+def extract_unique_rewards(dungeons):
+    all_rewards = []
+    for d in dungeons:
+        rewards = d.get("reward", "").split(",")
+        for r in rewards:
+            r = r.strip()
+            if r and r not in all_rewards:
+                all_rewards.append(r)
+    return all_rewards
 
-    for tp in data["teleports"]:
-        if keyword in tp["name"].lower() or keyword in tp["region_type"].lower() or keyword == "":
-            results["텔레포트"].append({
-                "type": "텔레포트",
-                "name": tp["name"],
-                "location": tp["location"],
-                "region_type": tp["region_type"]
-            })
 
-    return results
-
-# ------------------ 상태 초기화 ------------------
-if "keyword" not in st.session_state:
-    st.session_state["keyword"] = ""
-if "search_triggered" not in st.session_state:
-    st.session_state["search_triggered"] = False
-
-# ------------------ 검색 트리거 함수 ------------------
-def trigger_search():
-    st.session_state["search_triggered"] = True
-    
-# ------------------ Streamlit UI ------------------
-import streamlit as st
-
+# ------------------ Streamlit 시작 ------------------
 st.set_page_config(layout="wide")
 
-if "keyword" not in st.session_state:
-    st.session_state["keyword"] = ""
-if "search_triggered" not in st.session_state:
-    st.session_state["search_triggered"] = False
-
-def trigger_search():
-    st.session_state["search_triggered"] = True
+# ------------------ 탭 분기 ------------------
+st.sidebar.title("탐색 메뉴")
+main_tab = st.sidebar.radio("탭 선택", ["카테고리", "좌표 검색"])
 
 
-left, center, right = st.columns([1, 2, 1])
+# ------------------ 카테고리 탭 ------------------
+if main_tab == "카테고리":
+    category = st.sidebar.radio("카테고리 선택", ["던전", "재료"])
 
-with center:
+    if category == "던전":
+        dungeon_names = [d["name"] for d in data["dungeons"]]
+        selected_name = st.sidebar.selectbox("던전을 선택하세요", dungeon_names)
 
-    st.markdown("<h1 style='text-align: center;'>룬제로 검색기</h1>", unsafe_allow_html=True)
+        selected_dungeon = next((d for d in data["dungeons"] if d["name"] == selected_name), None)
+        if selected_dungeon:
+            st.header(f"[던전] {selected_dungeon['name']}")
+            st.write(f"위치: {selected_dungeon['location']}")
+            st.write(f"지역: {selected_dungeon.get('region', '')}")
+            st.write(f"보상: {selected_dungeon.get('reward', '')}")
+            if "notes" in selected_dungeon:
+                st.write(f"비고: {selected_dungeon['notes']}")
 
-    st.markdown("**검색어를 입력하세요 (던전, 재료, NPC, 텔레포트 등)**")
-    
-    input_col, button_col = st.columns([5, 1]) 
-    with input_col:
-        st.text_input(
-        label="", 
-        key="keyword", 
-        placeholder="검색어를 입력하세요 (엔터 또는 검색 버튼)",
-        label_visibility="collapsed", 
-        on_change=trigger_search
-    )
-    with button_col:
-        st.button("검색", on_click=trigger_search)
+            nearest_tp, dist = get_nearest_teleport(selected_dungeon["location"], data["teleports"])
+            st.write(f"가장 가까운 텔레포트: **{nearest_tp['name']}** ({nearest_tp['region_type']}) - {dist}m")
 
-    st.button("모든 항목 보기", key="show_all", on_click=lambda: setattr(st.session_state, "keyword", ""))
+    elif category == "재료":
+        reward_items = extract_unique_rewards(data["dungeons"])
+        selected_reward = st.sidebar.selectbox("재료를 선택하세요", reward_items)
 
+        matched_dungeons = [d for d in data["dungeons"] if selected_reward in d.get("reward", "")]
+        st.subheader(f"‘{selected_reward}’ 획득 가능한 던전")
 
-if st.session_state.search_triggered or st.session_state.keyword == "":
-    keyword = st.session_state.keyword
-    results = search_data(keyword)
-    total_count = sum(len(lst) for lst in results.values())
+        for d in matched_dungeons:
+            st.markdown(f"### {d['name']}")
+            st.write(f"위치: {d['location']}")
+            st.write(f"지역: {d.get('region', '')}")
+            st.write(f"보상: {d.get('reward', '')}")
+            nearest_tp, dist = get_nearest_teleport(d["location"], data["teleports"])
+            st.write(f"가장 가까운 텔레포트: **{nearest_tp['name']}** ({nearest_tp['region_type']}) - {dist}m")
+            st.markdown("---")
 
-    with center:
-        st.info(f"총 {total_count}개 결과가 검색되었습니다.")
+# ------------------ 좌표 검색 탭 ------------------
+elif main_tab == "좌표 검색":
+    st.header("좌표 입력")
+    x = st.number_input("X", step=1)
+    y = st.number_input("Y", step=1)
+    z = st.number_input("Z", step=1)
 
-        for category in ["던전", "NPC", "텔레포트"]:
-            if results[category]:
-                st.markdown(f"## {category}")
-                for res in results[category]:
-                    st.markdown(f"### [{res['type']}] {res['name']}")
-                    st.code(f"{res['name']} @ {res['location']}")
-                    st.write(f"위치: {res['location']}")
+    if st.button("가장 가까운 텔레포트 찾기"):
+        nearest_tp, dist = get_nearest_teleport([x, y, z], data["teleports"])
+        st.success(f"가장 가까운 텔레포트는 **{nearest_tp['name']}** ({nearest_tp['region_type']}) - {dist}m")
+        st.write(f"텔레포트 위치: {nearest_tp['location']}")
 
-                    if res["type"] == "NPC":
-                        if res.get("notes"):
-                            st.write(f"비고: {res['notes']}")
-                        st.write(
-                            f"가장 가까운 텔레포트: **{res['nearest_tp']['name']}** "
-                            f"({res['nearest_tp']['region_type']}) - {res['dist']}m"
-                        )
-
-                    elif res["type"] == "던전":
-                        st.write(f"지역: {res['region']}")
-                        st.write(f"보상: {res['reward']}")
-                        st.write(
-                            f"가장 가까운 텔레포트: **{res['nearest_tp']['name']}** "
-                            f"({res['nearest_tp']['region_type']}) - {res['dist']}m"
-                        )
-
-                    elif res["type"] == "텔레포트":
-                        st.write(f"지역 구분: {res['region_type']}")
-
-                    st.markdown("---")
-
-    st.session_state.search_triggered = False
 
