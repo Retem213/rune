@@ -146,7 +146,8 @@ def plot_virtual_map_interactive(data):
     fig = px.scatter(
         df,
         x="X",
-        y="Z",
+        y="Y",
+        z="Z"
         color="종류",
         text="이름",
         color_discrete_map={"던전": "red", "NPC": "blue"},
