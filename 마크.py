@@ -71,13 +71,16 @@ data = {
     ]
 }
 
+
+
 # ------------------ 한글 폰트 설정 ------------------
-font_path = "/mnt/data/NEXON_WARHAVEN_REGULAR.TTF"  # 업로드한 워헤이븐 폰트 사용
+font_path = "/mnt/data/NEXON_WARHAVEN_REGULAR.TTF"  # 또는 다른 TTF 경로
 if os.path.exists(font_path):
     font_prop = fm.FontProperties(fname=font_path)
     plt.rcParams['font.family'] = font_prop.get_name()
 else:
     st.warning("폰트 파일(NEXON_WARHAVEN_REGULAR.TTF)을 찾을 수 없습니다. 한글이 깨질 수 있습니다.")
+    font_prop = fm.FontProperties()  # 기본 폰트로 fallback
 
 # ------------------ 거리 계산 ------------------
 def get_nearest_teleport(location, teleports):
@@ -109,20 +112,18 @@ def search_data(keyword, data):
 
 # ------------------ 가상 지도 시각화 함수 ------------------
 def plot_virtual_map(data):
-    fig, ax = plt.subplots(figsize=(8, 6))  # 지도 크기 조정
+    fig, ax = plt.subplots(figsize=(8, 6))
     ax.set_facecolor("white")
     ax.set_title("가상 지도 (던전 & NPC 위치)", fontsize=14, fontproperties=font_prop)
     ax.set_xlabel("X 좌표", fontproperties=font_prop)
     ax.set_ylabel("Z 좌표", fontproperties=font_prop)
     ax.grid(True, linestyle='--', alpha=0.3)
 
-    # 던전 위치 표시
     for dungeon in data["dungeons"]:
         x, _, z = dungeon["location"]
         ax.plot(x, z, 'ro')
         ax.text(x, z, dungeon["name"], fontsize=7, color='darkred', ha='left', va='bottom', fontproperties=font_prop)
 
-    # NPC 위치 표시
     for npc in data["npcs"]:
         x, _, z = npc["location"]
         ax.plot(x, z, 'bo')
@@ -193,7 +194,7 @@ elif tab_option == "카테고리":
                 st.write(f"위치: {dungeon['location']}")
                 st.write(f"지역: {dungeon['region']}")
                 st.write(f"보상: {dungeon['reward']}")
-    
+
     elif category == "재료":
         reward_set = set()
         for dungeon in data["dungeons"]:
