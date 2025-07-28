@@ -152,13 +152,14 @@ elif tab_option == "카테고리":
     st.title("카테고리 보기")
 
     category = st.radio("카테고리 선택", ["던전", "재료"])
+
     if category == "던전":
         for dungeon in data["dungeons"]:
-            st.markdown(f"### {dungeon['name']}")
-            st.write(f"위치: {dungeon['location']}")
-            st.write(f"지역: {dungeon['region']}")
-            st.write(f"보상: {dungeon['reward']}")
-            st.markdown("---")
+            with st.expander(dungeon["name"]):
+                st.write(f"위치: {dungeon['location']}")
+                st.write(f"지역: {dungeon['region']}")
+                st.write(f"보상: {dungeon['reward']}")
+    
     elif category == "재료":
         reward_set = set()
         for dungeon in data["dungeons"]:
@@ -166,12 +167,13 @@ elif tab_option == "카테고리":
                 reward = reward.strip()
                 if reward and not reward.endswith("G"):
                     reward_set.add(reward)
+
         for reward in sorted(reward_set):
-            st.markdown(f"### {reward}")
-            related = [d for d in data["dungeons"] if reward in d["reward"]]
-            for d in related:
-                st.write(f"- {d['name']} @ {d['region']}")
-            st.markdown("---")
+            with st.expander(reward):
+                related = [d for d in data["dungeons"] if reward in d["reward"]]
+                for d in related:
+                    st.write(f"- {d['name']} @ {d['region']}")
+
 
 # ------------------ 좌표 검색 기능 ------------------
 elif tab_option == "좌표 검색":
