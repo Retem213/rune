@@ -78,7 +78,6 @@ if os.path.exists(font_path):
     font_prop = fm.FontProperties(fname=font_path)
     font_name = font_prop.get_name()
 else:
-    st.warning("폰트 파일을 찾을 수 없습니다. 기본 폰트로 대체됩니다.")
     font_prop = fm.FontProperties()
     font_name = font_prop.get_name()
 
