@@ -102,13 +102,14 @@ def search_data(keyword, data):
 
     return results
 
-# ------------------ 가상 지도  ------------------
 def plot_virtual_map_interactive(data):
-    col1, col2 = st.columns(2)
+    col1, col2, col3 = st.columns(3)
     with col1:
         show_dungeon = st.checkbox("던전 표시", value=True)
     with col2:
         show_npc = st.checkbox("NPC 표시", value=True)
+    with col3:
+        show_tp = st.checkbox("텔레포트 표시", value=True)
 
     dungeon_points = [
         {
@@ -135,7 +136,19 @@ def plot_virtual_map_interactive(data):
         for n in data["npcs"]
     ] if show_npc else []
 
-    df = pd.DataFrame(dungeon_points + npc_points)
+    tp_points = [
+        {
+            "이름": tp["name"],
+            "X": tp["location"][0],
+            "Y": tp["location"][1],
+            "Z": tp["location"][2],
+            "종류": "텔레포트",
+            "지역구분": tp["region_type"]
+        }
+        for tp in data["teleports"]
+    ] if show_tp else []
+
+    df = pd.DataFrame(dungeon_points + npc_points + tp_points)
 
     if df.empty:
         st.warning("표시할 데이터가 없습니다. 체크박스를 선택하세요.")
@@ -147,23 +160,30 @@ def plot_virtual_map_interactive(data):
         y="Z",
         color="종류",
         text="이름",
-        color_discrete_map={"던전": "red", "NPC": "blue"},
+        color_discrete_map={
+            "던전": "red",
+            "NPC": "yellow",
+            "텔레포트": "purple"
+        },
     )
 
     fig.update_traces(
         marker=dict(size=8),
         textposition="top center",
-        customdata=df[["X", "Y", "Z", "이름", "지역" if "지역" in df else "비고", "보상" if "보상" in df else ""]]
+        customdata=df[
+            ["X", "Y", "Z", "이름",
+             "지역" if "지역" in df else "지역구분" if "지역구분" in df else "비고",
+             "보상" if "보상" in df else ""]
+        ]
     )
 
-    # ✅ hovertemplate으로 순서 고정
     fig.update_traces(
         hovertemplate=(
             "X=%{customdata[0]}<br>"
             "Y=%{customdata[1]}<br>"
             "Z=%{customdata[2]}<br>"
             "이름=%{customdata[3]}<br>"
-            "지역=%{customdata[4]}<br>"
+            "지역/비고=%{customdata[4]}<br>"
             "보상=%{customdata[5]}"
         )
     )
@@ -180,8 +200,6 @@ def plot_virtual_map_interactive(data):
     )
 
     st.plotly_chart(fig, use_container_width=True, config={"scrollZoom": True})
-
-
 
 # ------------------ Streamlit ------------------
 st.set_page_config(layout="wide")
