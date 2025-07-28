@@ -170,7 +170,7 @@ def plot_virtual_map_interactive(data):
     z_min, z_max = df["Z"].min(), df["Z"].max()
     padding = 20  
     fig.update_layout(
-        height=800,
+        height=700,
         dragmode="pan",
         xaxis=dict(range=[x_min - padding, x_max + padding]),
         yaxis=dict(range=[z_min - padding, z_max + padding])
@@ -181,12 +181,6 @@ def plot_virtual_map_interactive(data):
 
 
 # ------------------ Streamlit ------------------
-st.set_page_config(layout="wide")
-st.sidebar.title("메뉴")
-
-tab_option = st.sidebar.radio("탭 선택", ["검색기능", "카테고리", "좌표 검색", "가상 지도"])
-
-# ------------------ 검색 탭 ------------------
 if tab_option == "검색기능":
     st.title("룬제로 검색기")
 
@@ -200,8 +194,14 @@ if tab_option == "검색기능":
 
     col_input, col_button = st.columns([5, 1])
     with col_input:
-        st.text_input("검색어", key="keyword", placeholder="검색어 입력 후 엔터", on_change=trigger_search)
+        st.text_input(
+            "검색어",
+            key="keyword",
+            placeholder="검색어 입력 후 엔터",
+            on_change=trigger_search
+        )
     with col_button:
+        st.write("")  
         st.button("검색", on_click=trigger_search)
 
     st.button("모든 항목 보기", key="show_all", on_click=lambda: setattr(st.session_state, "keyword", ""))
@@ -229,6 +229,7 @@ if tab_option == "검색기능":
                         st.write(f"지역 구분: {item['region_type']}")
                     st.markdown("---")
         st.session_state.search_triggered = False
+
 
 # ------------------ 카테고리 탭 ------------------
 elif tab_option == "카테고리":
