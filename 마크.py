@@ -149,7 +149,6 @@ def plot_virtual_map_interactive(data):
         y="Z",
         color="종류",
         text="이름",
-        title="가상 지도 (던전 & NPC)",
         color_discrete_map={"던전": "red", "NPC": "blue"},
         hover_data={
             "이름": True,
@@ -171,7 +170,7 @@ def plot_virtual_map_interactive(data):
     z_min, z_max = df["Z"].min(), df["Z"].max()
     padding = 20  
     fig.update_layout(
-        height=600,
+        height=800,
         dragmode="pan",
         xaxis=dict(range=[x_min - padding, x_max + padding]),
         yaxis=dict(range=[z_min - padding, z_max + padding])
