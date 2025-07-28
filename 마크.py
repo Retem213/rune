@@ -201,27 +201,34 @@ if tab_option == "검색기능":
         st.session_state["search_triggered"] = True
         st.session_state["show_all"] = False
 
-    def show_all_items():
-        st.session_state["show_all"] = True
-        st.session_state["search_triggered"] = False
-        st.session_state["keyword"] = ""
+    def toggle_show_all():
+        st.session_state["show_all"] = not st.session_state["show_all"]
+        if st.session_state["show_all"]:
+            st.session_state["keyword"] = ""
+            st.session_state["search_triggered"] = False
 
-    with st.form(key="search_form"):
-        col_input, col_button = st.columns([5, 1])
-        with col_input:
-            st.text_input(
-                "검색어",
-                key="keyword",
-                placeholder="검색어 입력 후 엔터"
-            )
-        with col_button:
-            st.form_submit_button("검색", on_click=trigger_search)
+    col_input, col_button = st.columns([5, 1])
+    with col_input:
+        st.text_input(
+            "검색어",
+            key="keyword",
+            placeholder="검색어 입력 후 엔터",
+            on_change=trigger_search
+        )
+    with col_button:
+        st.write("")  
+        st.button("검색", on_click=trigger_search)
 
-    st.button("모든 항목 보기", on_click=show_all_items)
+    st.checkbox(
+        "모든 항목 보기",
+        key="show_all",
+        on_change=toggle_show_all
+    )
 
     if st.session_state.search_triggered or st.session_state.show_all:
         results = search_data(st.session_state.keyword, data)
         total = sum(len(results[k]) for k in results)
+        st.info(f"총 {total}개 결과")
 
         for category in ["던전", "NPC", "텔레포트"]:
             if results[category]:
@@ -242,7 +249,7 @@ if tab_option == "검색기능":
                     st.markdown("---")
 
         st.session_state.search_triggered = False
-        st.session_state.show_all = False
+
 
 
 # ------------------ 카테고리 탭 ------------------
