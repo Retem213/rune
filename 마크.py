@@ -201,11 +201,11 @@ if tab_option == "검색기능":
         st.session_state["search_triggered"] = True
         st.session_state["show_all"] = False
 
-    def toggle_show_all():
-        st.session_state["show_all"] = not st.session_state["show_all"]
-        if st.session_state["show_all"]:
-            st.session_state["keyword"] = ""
-            st.session_state["search_triggered"] = False
+    def show_all_items():
+        st.session_state["keyword"] = ""
+        st.session_state["search_triggered"] = False
+        st.session_state["show_all"] = True
+
 
     col_input, col_button = st.columns([5, 1])
     with col_input:
@@ -216,17 +216,14 @@ if tab_option == "검색기능":
             on_change=trigger_search
         )
     with col_button:
-        st.write("")  
+        st.markdown(" ")  
+        st.markdown(" ")  
         st.button("검색", on_click=trigger_search)
 
-    st.checkbox(
-        "모든 항목 보기",
-        key="show_all",
-        on_change=toggle_show_all
-    )
+    st.button("모든 항목 보기", on_click=show_all_items)
 
     if st.session_state.search_triggered or st.session_state.show_all:
-        results = search_data(st.session_state.keyword, data)
+        results = search_data(st.session_state["keyword"], data)
         total = sum(len(results[k]) for k in results)
         st.info(f"총 {total}개 결과")
 
@@ -239,17 +236,22 @@ if tab_option == "검색기능":
                     if item["type"] == "던전":
                         st.write(f"지역: {item['region']}")
                         st.write(f"보상: {item['reward']}")
-                        st.write(f"가장 가까운 텔레포트: {item['nearest_tp']['name']} ({item['nearest_tp']['region_type']}) - {item['dist']}m")
+                        st.write(
+                            f"가장 가까운 텔레포트: {item['nearest_tp']['name']} "
+                            f"({item['nearest_tp']['region_type']}) - {item['dist']}m"
+                        )
                     elif item["type"] == "NPC":
                         if item.get("notes"):
                             st.write(f"비고: {item['notes']}")
-                        st.write(f"가장 가까운 텔레포트: {item['nearest_tp']['name']} ({item['nearest_tp']['region_type']}) - {item['dist']}m")
+                        st.write(
+                            f"가장 가까운 텔레포트: {item['nearest_tp']['name']} "
+                            f"({item['nearest_tp']['region_type']}) - {item['dist']}m"
+                        )
                     elif item["type"] == "텔레포트":
                         st.write(f"지역 구분: {item['region_type']}")
                     st.markdown("---")
 
-        st.session_state.search_triggered = False
-
+        st.session_state["search_triggered"] = False
 
 
 # ------------------ 카테고리 탭 ------------------
