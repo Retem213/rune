@@ -104,14 +104,12 @@ def search_data(keyword, data):
 
 # ------------------ 가상 지도  ------------------
 def plot_virtual_map_interactive(data):
-
     col1, col2 = st.columns(2)
     with col1:
         show_dungeon = st.checkbox("던전 표시", value=True)
     with col2:
         show_npc = st.checkbox("NPC 표시", value=True)
 
-    # 데이터 구성
     dungeon_points = [
         {
             "이름": d["name"],
@@ -146,30 +144,34 @@ def plot_virtual_map_interactive(data):
     fig = px.scatter(
         df,
         x="X",
-        y="Y",
-        z="Z"
+        y="Z",
         color="종류",
         text="이름",
         color_discrete_map={"던전": "red", "NPC": "blue"},
-        hover_data={
-            "이름": True,
-            "X": True,
-            "Y": True, 
-            "Z": True,
-            "종류": True,
-            "지역": "지역" in df.columns,
-            "보상": "보상" in df.columns,
-            "비고": "비고" in df.columns
-        }
     )
 
+    fig.update_traces(
+        marker=dict(size=8),
+        textposition="top center",
+        customdata=df[["X", "Y", "Z", "이름", "지역" if "지역" in df else "비고", "보상" if "보상" in df else ""]]
+    )
 
-    fig.update_traces(textposition="top center", marker=dict(size=8))
-
+    # ✅ hovertemplate으로 순서 고정
+    fig.update_traces(
+        hovertemplate=(
+            "X=%{customdata[0]}<br>"
+            "Y=%{customdata[1]}<br>"
+            "Z=%{customdata[2]}<br>"
+            "이름=%{customdata[3]}<br>"
+            "지역=%{customdata[4]}<br>"
+            "보상=%{customdata[5]}"
+        )
+    )
 
     x_min, x_max = df["X"].min(), df["X"].max()
     z_min, z_max = df["Z"].min(), df["Z"].max()
-    padding = 20  
+    padding = 20
+
     fig.update_layout(
         height=700,
         dragmode="pan",
@@ -177,8 +179,8 @@ def plot_virtual_map_interactive(data):
         yaxis=dict(range=[z_min - padding, z_max + padding])
     )
 
-
     st.plotly_chart(fig, use_container_width=True, config={"scrollZoom": True})
+
 
 
 # ------------------ Streamlit ------------------
