@@ -217,7 +217,7 @@ def plot_virtual_map_interactive(data):
 st.set_page_config(layout="wide")
 st.sidebar.title("메뉴")
 
-tab_option = st.sidebar.radio(["검색기능", "카테고리", "좌표 검색", "가상 지도"])
+tab_option = st.sidebar.radio("탭 선택", ["검색기능", "카테고리", "좌표 검색", "가상 지도"])
 
 # ------------------ 검색 탭 ------------------
 if tab_option == "검색기능":
