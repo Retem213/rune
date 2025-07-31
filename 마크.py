@@ -88,7 +88,8 @@ def search_data(keyword, data):
     results = {"던전": [], "NPC": [], "텔레포트": []}
 
     for npc in data["npcs"]:
-        if keyword in npc["name"].lower() or keyword in npc.get("notes", "").lower() or keyword == "":
+        npc_region = npc.get("region", "")
+        if keyword in npc["name"].lower() or keyword in npc.get("notes", "").lower() or keyword in npc_region.lower() or keyword == "":
             nearest, dist = get_nearest_teleport(npc["location"], data["teleports"])
             results["NPC"].append({**npc, "type": "NPC", "nearest_tp": nearest, "dist": dist})
 
@@ -98,7 +99,7 @@ def search_data(keyword, data):
             results["던전"].append({**d, "type": "던전", "nearest_tp": nearest, "dist": dist})
 
     for tp in data["teleports"]:
-        if keyword in tp["name"].lower() or keyword in tp["region_type"].lower() or keyword == "":
+        if keyword in tp["name"].lower() or keyword in tp.get("region_type", "").lower() or keyword == "":
             results["텔레포트"].append({**tp, "type": "텔레포트"})
 
     return results
