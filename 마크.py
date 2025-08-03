@@ -123,8 +123,8 @@ def plot_virtual_map_interactive(data):
         dungeon_names = [d["name"] for d in data["dungeons"]]
         with st.expander("던전 목록", expanded=False):
             selected_dungeons = []
-            for name in dungeon_names:
-                if st.checkbox(f"◻ {name}", key=f"dungeon_{name}"):
+            for i, name in enumerate(dungeon_names):
+                if st.checkbox(f"◻ {name}", key=f"dungeon_{i}_{name}"):
                     selected_dungeons.append(name)
 
         df_dungeon = pd.DataFrame([
@@ -162,8 +162,8 @@ def plot_virtual_map_interactive(data):
         npc_names = [n["name"] for n in data["npcs"]]
         with st.expander("NPC 목록", expanded=False):
             selected_npcs = []
-            for name in npc_names:
-                if st.checkbox(f"◻ {name}", key=f"npc_{name}"):
+            for i, name in enumerate(npc_names):
+                if st.checkbox(f"◻ {name}", key=f"npc_{i}_{name}"):
                     selected_npcs.append(name)
 
         df_npc = pd.DataFrame([
@@ -175,6 +175,7 @@ def plot_virtual_map_interactive(data):
                 "비고": n.get("notes", "")
             } for n in data["npcs"]
         ])
+
         fig.add_trace(go.Scatter(
             x=df_npc["X"],
             y=df_npc["Z"],
@@ -198,8 +199,8 @@ def plot_virtual_map_interactive(data):
         tp_names = [tp["name"] for tp in data["teleports"]]
         with st.expander("텔레포트 목록", expanded=False):
             selected_tps = []
-            for name in tp_names:
-                if st.checkbox(f"◻ {name}", key=f"tp_{name}"):
+            for i, name in enumerate(tp_names):
+                if st.checkbox(f"◻ {name}", key=f"tp_{i}_{name}"):
                     selected_tps.append(name)
 
         df_tp = pd.DataFrame([
@@ -211,6 +212,7 @@ def plot_virtual_map_interactive(data):
                 "지역구분": tp["region_type"]
             } for tp in data["teleports"]
         ])
+
         fig.add_trace(go.Scatter(
             x=df_tp["X"],
             y=df_tp["Z"],
@@ -355,6 +357,7 @@ elif tab_option == "좌표 검색":
 elif tab_option == "가상 지도":
     st.title("가상 지도 시각화 (드래그 이동 / 휠 줌)")
     plot_virtual_map_interactive(data)
+
 
 
 
