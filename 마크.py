@@ -108,13 +108,10 @@ def plot_virtual_map_interactive(data):
     import plotly.graph_objects as go
     import pandas as pd
 
-    col1, col2, col3 = st.columns(3)
-    with col1:
-        show_dungeon = st.checkbox("던전 표시", value=True)
-    with col2:
-        show_npc = st.checkbox("NPC 표시", value=True)
-    with col3:
-        show_tp = st.checkbox("텔레포트 표시", value=True)
+    # --- 사이드바: 표시 토글 ---
+    show_dungeon = st.sidebar.checkbox("던전 표시", value=True)
+    show_npc = st.sidebar.checkbox("NPC 표시", value=True)
+    show_tp = st.sidebar.checkbox("텔레포트 표시", value=True)
 
     fig = go.Figure()
 
@@ -123,10 +120,10 @@ def plot_virtual_map_interactive(data):
         dungeon_names = [d["name"] for d in data["dungeons"]]
         selected_dungeons = []
 
-        with st.expander("던전 목록", expanded=True):
+        with st.sidebar.expander("던전 목록", expanded=False):
             toggle_dungeon_names = st.checkbox("던전 이름 전체 표시 ON/OFF", value=True, key="toggle_dungeon_names")
             for i, name in enumerate(dungeon_names):
-                checked = st.checkbox(f"◻ {name}", key=f"dungeon_{i}_{name}", value=toggle_dungeon_names)
+                checked = st.checkbox(f"{name}", key=f"dungeon_{i}_{name}", value=toggle_dungeon_names)
                 if checked:
                     selected_dungeons.append(name)
 
@@ -165,10 +162,10 @@ def plot_virtual_map_interactive(data):
         npc_names = [n["name"] for n in data["npcs"]]
         selected_npcs = []
 
-        with st.expander("NPC 목록", expanded=True):
+        with st.sidebar.expander("NPC 목록", expanded=False):
             toggle_npc_names = st.checkbox("NPC 이름 전체 표시 ON/OFF", value=True, key="toggle_npc_names")
             for i, name in enumerate(npc_names):
-                checked = st.checkbox(f"◻ {name}", key=f"npc_{i}_{name}", value=toggle_npc_names)
+                checked = st.checkbox(f"{name}", key=f"npc_{i}_{name}", value=toggle_npc_names)
                 if checked:
                     selected_npcs.append(name)
 
@@ -205,10 +202,10 @@ def plot_virtual_map_interactive(data):
         tp_names = [tp["name"] for tp in data["teleports"]]
         selected_tps = []
 
-        with st.expander("텔레포트 목록", expanded=True):
+        with st.sidebar.expander("텔레포트 목록", expanded=False):
             toggle_tp_names = st.checkbox("텔레포트 이름 전체 표시 ON/OFF", value=True, key="toggle_tp_names")
             for i, name in enumerate(tp_names):
-                checked = st.checkbox(f"◻ {name}", key=f"tp_{i}_{name}", value=toggle_tp_names)
+                checked = st.checkbox(f"{name}", key=f"tp_{i}_{name}", value=toggle_tp_names)
                 if checked:
                     selected_tps.append(name)
 
@@ -367,6 +364,7 @@ elif tab_option == "좌표 검색":
 elif tab_option == "가상 지도":
     st.title("가상 지도 시각화 (드래그 이동 / 휠 줌)")
     plot_virtual_map_interactive(data)
+
 
 
 
