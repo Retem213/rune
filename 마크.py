@@ -80,13 +80,14 @@ def get_nearest_teleport(location, teleports):
     nearest = min(teleports, key=lambda t: euclidean(t["location"], location))
     return nearest, round(euclidean(nearest["location"], location))
 
-# ------------------ 검색 함수 ------------------
+# ------------------ 검색 기능 ------------------
 def search_data(keyword, data):
     keyword = keyword.strip().lower()
     results = {"던전": [], "NPC": [], "텔레포트": []}
 
     for npc in data["npcs"]:
-        if keyword in npc["name"].lower() or keyword in npc.get("notes", "").lower() or keyword == "":
+        npc_region = npc.get("region", "")
+        if keyword in npc["name"].lower() or keyword in npc.get("notes", "").lower() or keyword in npc_region.lower() or keyword == "":
             nearest, dist = get_nearest_teleport(npc["location"], data["teleports"])
             results["NPC"].append({**npc, "type": "NPC", "nearest_tp": nearest, "dist": dist})
 
@@ -96,126 +97,119 @@ def search_data(keyword, data):
             results["던전"].append({**d, "type": "던전", "nearest_tp": nearest, "dist": dist})
 
     for tp in data["teleports"]:
-        if keyword in tp["name"].lower() or keyword in tp["region_type"].lower() or keyword == "":
+        if keyword in tp["name"].lower() or keyword in tp.get("region_type", "").lower() or keyword == "":
             results["텔레포트"].append({**tp, "type": "텔레포트"})
 
     return results
 
-# ------------------ 가상 지도 시각화 ------------------
-def plot_virtual_map_interactive():
-    st.title("가상 지도 보기")
-    show_dungeon = st.checkbox("던전 이름 표시", value=True)
-    show_npc = st.checkbox("NPC 이름 표시", value=True)
-    show_tp = st.checkbox("텔레포트 이름 표시", value=True)
+# ------------------ 지도 기능 ------------------
+def plot_virtual_map_interactive(data):
+    st.markdown("## 시각화 설정")
+    show_dungeon = st.checkbox("던전 전체 표시", value=True)
+    show_npc = st.checkbox("NPC 전체 표시", value=True)
+    show_tp = st.checkbox("텔레포트 전체 표시", value=True)
 
+    selected_dungeon = st.multiselect("표시할 던전 선택", [d["name"] for d in data["dungeons"]])
+    selected_npc = st.multiselect("표시할 NPC 선택", [n["name"] for n in data["npcs"]])
+    selected_tp = st.multiselect("표시할 텔레포트 선택", [t["name"] for t in data["teleports"]])
+
+    import plotly.graph_objects as go
     fig = go.Figure()
-    fig.update_layout(
-        width=800, height=600,
-        xaxis=dict(title="X", showgrid=True, zeroline=False),
-        yaxis=dict(title="Z", showgrid=True, zeroline=False),
-        plot_bgcolor="white"
-    )
 
-    if data["dungeons"]:
+    if show_dungeon:
         df_dungeon = pd.DataFrame([
-            {"X": d["location"][0], "Z": d["location"][2], "이름": d["name"]}
-            for d in data["dungeons"]
+            {
+                "이름": d["name"],
+                "X": d["location"][0],
+                "Y": d["location"][1],
+                "Z": d["location"][2],
+                "지역": d["region"],
+                "보상": d["reward"]
+            } for d in data["dungeons"] if d["name"] in selected_dungeon or not selected_dungeon
         ])
         fig.add_trace(go.Scatter(
             x=df_dungeon["X"],
             y=df_dungeon["Z"],
-            mode="markers+text",
+            mode="markers+text" if not df_dungeon.empty else "markers",
             name="던전",
             marker=dict(color="red", size=8),
-            text=df_dungeon["이름"] if show_dungeon else None,
-            textposition="top center"
+            text=df_dungeon["이름"] if not df_dungeon.empty else None,
+            textposition="top center",
+            customdata=df_dungeon[["X", "Y", "Z", "이름", "지역", "보상"]],
+            hovertemplate=(
+                "X=%{customdata[0]}<br>"
+                "Y=%{customdata[1]}<br>"
+                "Z=%{customdata[2]}<br>"
+                "이름=%{customdata[3]}<br>"
+                "지역=%{customdata[4]}<br>"
+                "보상=%{customdata[5]}"
+            )
         ))
 
-    if data["npcs"]:
+    if show_npc:
         df_npc = pd.DataFrame([
-            {"X": n["location"][0], "Z": n["location"][2], "이름": n["name"]}
-            for n in data["npcs"]
+            {
+                "이름": n["name"],
+                "X": n["location"][0],
+                "Y": n["location"][1],
+                "Z": n["location"][2],
+                "비고": n.get("notes", "")
+            } for n in data["npcs"] if n["name"] in selected_npc or not selected_npc
         ])
         fig.add_trace(go.Scatter(
             x=df_npc["X"],
             y=df_npc["Z"],
-            mode="markers+text",
+            mode="markers+text" if not df_npc.empty else "markers",
             name="NPC",
-            marker=dict(color="orange", size=8),
-            text=df_npc["이름"] if show_npc else None,
-            textposition="top center"
+            marker=dict(color="yellow", size=8),
+            text=df_npc["이름"] if not df_npc.empty else None,
+            textposition="top center",
+            customdata=df_npc[["X", "Y", "Z", "이름", "비고"]],
+            hovertemplate=(
+                "X=%{customdata[0]}<br>"
+                "Y=%{customdata[1]}<br>"
+                "Z=%{customdata[2]}<br>"
+                "이름=%{customdata[3]}<br>"
+                "비고=%{customdata[4]}"
+            )
         ))
 
-    if data["teleports"]:
+    if show_tp:
         df_tp = pd.DataFrame([
-            {"X": t["location"][0], "Z": t["location"][2], "이름": t["name"]}
-            for t in data["teleports"]
+            {
+                "이름": tp["name"],
+                "X": tp["location"][0],
+                "Y": tp["location"][1],
+                "Z": tp["location"][2],
+                "지역구분": tp["region_type"]
+            } for tp in data["teleports"] if tp["name"] in selected_tp or not selected_tp
         ])
         fig.add_trace(go.Scatter(
             x=df_tp["X"],
             y=df_tp["Z"],
-            mode="markers+text",
+            mode="markers+text" if not df_tp.empty else "markers",
             name="텔레포트",
             marker=dict(color="purple", size=8),
-            text=df_tp["이름"] if show_tp else None,
-            textposition="top center"
+            text=df_tp["이름"] if not df_tp.empty else None,
+            textposition="top center",
+            customdata=df_tp[["X", "Y", "Z", "이름", "지역구분"]],
+            hovertemplate=(
+                "X=%{customdata[0]}<br>"
+                "Y=%{customdata[1]}<br>"
+                "Z=%{customdata[2]}<br>"
+                "이름=%{customdata[3]}<br>"
+                "지역구분=%{customdata[4]}"
+            )
         ))
 
-    st.plotly_chart(fig, use_container_width=True)
+    if not fig.data:
+        st.warning("표시할 데이터가 없습니다.")
+        return
 
-# ------------------ UI ------------------
-st.set_page_config(page_title="룬제로 검색기", layout="wide")
-st.title("룬제로 검색기")
+    fig.update_layout(
+        height=700,
+        dragmode="pan",
+    )
 
-tab = st.sidebar.radio("탭 선택", ["검색기능", "카테고리", "좌표 검색", "가상 지도"])
-
-# ------------------ 검색기능 탭 ------------------
-if tab == "검색기능":
-    keyword = st.text_input("검색어를 입력하세요", "")
-    results = search_data(keyword, data)
-
-    for category in ["던전", "NPC", "텔레포트"]:
-        if results[category]:
-            st.markdown(f"### 🔍 {category}")
-            for item in results[category]:
-                st.markdown(f"- **{item['name']}** @ `{item['location']}`")
-                if category in ["던전", "NPC"]:
-                    st.markdown(f"  - 가장 가까운 텔레포트: **{item['nearest_tp']['name']}** ({item['dist']}m)")
-
-# ------------------ 카테고리 탭 ------------------
-elif tab == "카테고리":
-    category = st.selectbox("카테고리 선택", ["던전", "NPC", "텔레포트"])
-    names = [item["name"] for item in data[category.lower() + "s"]]
-    selected = st.selectbox(f"{category} 선택", names)
-    item = next(i for i in data[category.lower() + "s"] if i["name"] == selected)
-
-    st.markdown(f"## [{category}] {item['name']}")
-    st.code(f"{item['name']} @ {item['location']}")
-    st.write(f"위치: `{item['location']}`")
-
-    if category == "던전":
-        st.write(f"지역: `{item.get('region', '')}`")
-        st.write(f"보상: `{item.get('reward', '')}`")
-        tp, dist = get_nearest_teleport(item["location"], data["teleports"])
-        st.write(f"가장 가까운 텔레포트: **{tp['name']}** ({dist}m)")
-    elif category == "NPC":
-        st.write(f"비고: `{item.get('notes', '')}`")
-        tp, dist = get_nearest_teleport(item["location"], data["teleports"])
-        st.write(f"가장 가까운 텔레포트: **{tp['name']}** ({dist}m)")
-    elif category == "텔레포트":
-        st.write(f"지역 구분: `{item.get('region_type', '')}`")
-
-# ------------------ 좌표 검색 탭 ------------------
-elif tab == "좌표 검색":
-    x = st.number_input("X 좌표", step=1)
-    y = st.number_input("Y 좌표", step=1)
-    z = st.number_input("Z 좌표", step=1)
-    current_location = (x, y, z)
-    nearest, dist = get_nearest_teleport(current_location, data["teleports"])
-    st.write(f"가장 가까운 텔레포트는 **{nearest['name']}** ({nearest['region_type']})")
-    st.write(f"거리: {dist}m")
-
-# ------------------ 가상 지도 탭 ------------------
-elif tab == "가상 지도":
-    plot_virtual_map_interactive()
+    st.plotly_chart(fig, use_container_width=True, config={"scrollZoom": True})
 
