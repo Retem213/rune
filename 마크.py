@@ -35,7 +35,7 @@ data = {
         {"name": "폭풍의 창 오닉스", "location": [336, 70, 248], "region": "꿰뚫는 폭퐁의 눈", "reward": "5000G, 꺽여버린 창, 미약한 힘이 담긴 영혼", "notes": ""},
         {"name": "저주 설계자 모르모트", "location": [-226, 72, 369], "region": "공허의 전당", "reward": "5000G, 공허한 운석, 미약한 힘이 담긴 영혼", "notes": ""},
         {"name": "키메라워리어", "location": [-158, 73, 33], "region": "혼동의 미궁", "reward": "", "notes": "사자혼종에서 변경된 보스"},
-        {"name": "파편의 보루 던전", "location": [199 , 70, 73], "region": "파편의 보루 던전", "reward": "", "notes": ""},
+        {"name": "", "location": [199 , 70, 73], "region": "파편의 보루 던전", "reward": "", "notes": ""},
         {"name": "새벽을 가르는 자 엘리나", "location": [903, 68, 381], "region": "여명의 경계 던전", "reward": "", "notes": ""},
     ],
     "npcs": [
@@ -364,6 +364,7 @@ elif tab_option == "좌표 검색":
 elif tab_option == "가상 지도":
     st.title("가상 지도")
     plot_virtual_map_interactive(data)
+
 
 
 
