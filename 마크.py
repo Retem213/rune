@@ -107,20 +107,26 @@ def search_data(keyword, data):
 def plot_virtual_map_interactive(data):
     import plotly.graph_objects as go
     import pandas as pd
+
     col1, col2, col3 = st.columns(3)
     with col1:
-        show_dungeon = st.checkbox("던전 표시", value=True)
+        show_dungeon = st.checkbox("던전 표시", value=False)
     with col2:
-        show_npc = st.checkbox("NPC 표시", value=True)
+        show_npc = st.checkbox("NPC 표시", value=False)
     with col3:
-        show_tp = st.checkbox("텔레포트 표시", value=True)
+        show_tp = st.checkbox("텔레포트 표시", value=False)
 
     fig = go.Figure()
 
+    # --- 던전 ---
     if show_dungeon:
-        with st.expander("던전 목록 보기", expanded=True):
-            dungeon_names = [d["name"] for d in data["dungeons"]]
-            selected_dungeons = st.multiselect("표시할 던전 선택", dungeon_names, default=dungeon_names)
+        dungeon_names = [d["name"] for d in data["dungeons"]]
+        with st.expander("던전 목록", expanded=False):
+            selected_dungeons = []
+            for name in dungeon_names:
+                if st.checkbox(f"◻ {name}", key=f"dungeon_{name}"):
+                    selected_dungeons.append(name)
+
         df_dungeon = pd.DataFrame([
             {
                 "이름": d["name"],
@@ -131,6 +137,7 @@ def plot_virtual_map_interactive(data):
                 "보상": d["reward"]
             } for d in data["dungeons"]
         ])
+
         fig.add_trace(go.Scatter(
             x=df_dungeon["X"],
             y=df_dungeon["Z"],
@@ -150,10 +157,15 @@ def plot_virtual_map_interactive(data):
             )
         ))
 
+    # --- NPC ---
     if show_npc:
-        with st.expander("NPC 목록 보기", expanded=True):
-            npc_names = [n["name"] for n in data["npcs"]]
-            selected_npcs = st.multiselect("표시할 NPC 선택", npc_names, default=npc_names)
+        npc_names = [n["name"] for n in data["npcs"]]
+        with st.expander("NPC 목록", expanded=False):
+            selected_npcs = []
+            for name in npc_names:
+                if st.checkbox(f"◻ {name}", key=f"npc_{name}"):
+                    selected_npcs.append(name)
+
         df_npc = pd.DataFrame([
             {
                 "이름": n["name"],
@@ -181,10 +193,15 @@ def plot_virtual_map_interactive(data):
             )
         ))
 
+    # --- 텔레포트 ---
     if show_tp:
-        with st.expander("텔레포트 목록 보기", expanded=True):
-            tp_names = [tp["name"] for tp in data["teleports"]]
-            selected_tps = st.multiselect("표시할 텔레포트 선택", tp_names, default=tp_names)
+        tp_names = [tp["name"] for tp in data["teleports"]]
+        with st.expander("텔레포트 목록", expanded=False):
+            selected_tps = []
+            for name in tp_names:
+                if st.checkbox(f"◻ {name}", key=f"tp_{name}"):
+                    selected_tps.append(name)
+
         df_tp = pd.DataFrame([
             {
                 "이름": tp["name"],
@@ -338,6 +355,7 @@ elif tab_option == "좌표 검색":
 elif tab_option == "가상 지도":
     st.title("가상 지도 시각화 (드래그 이동 / 휠 줌)")
     plot_virtual_map_interactive(data)
+
 
 
 
