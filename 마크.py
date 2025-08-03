@@ -105,8 +105,10 @@ def search_data(keyword, data):
     return results
 
 # ------------------ 지도 기능 ------------------
-
 def plot_virtual_map_interactive(data):
+    st.markdown("#### 표시할 항목 이름 검색 (부분 일치)")
+    filter_keyword = st.text_input("이름 필터", value="").strip().lower()
+
     col1, col2, col3 = st.columns(3)
     with col1:
         show_dungeon = st.checkbox("던전 표시", value=True)
@@ -128,25 +130,27 @@ def plot_virtual_map_interactive(data):
                 "지역": d["region"],
                 "보상": d["reward"]
             } for d in data["dungeons"]
+            if filter_keyword in d["name"].lower()
         ])
-        fig.add_trace(go.Scatter(
-            x=df_dungeon["X"],
-            y=df_dungeon["Z"],
-            mode="markers+text",
-            name="던전",
-            marker=dict(color="red", size=8),
-            text=df_dungeon["이름"],
-            textposition="top center",
-            customdata=df_dungeon[["X", "Y", "Z", "이름", "지역", "보상"]],
-            hovertemplate=(
-                "X=%{customdata[0]}<br>"
-                "Y=%{customdata[1]}<br>"
-                "Z=%{customdata[2]}<br>"
-                "이름=%{customdata[3]}<br>"
-                "지역=%{customdata[4]}<br>"
-                "보상=%{customdata[5]}"
-            )
-        ))
+        if not df_dungeon.empty:
+            fig.add_trace(go.Scatter(
+                x=df_dungeon["X"],
+                y=df_dungeon["Z"],
+                mode="markers+text",
+                name="던전",
+                marker=dict(color="red", size=8),
+                text=df_dungeon["이름"],
+                textposition="top center",
+                customdata=df_dungeon[["X", "Y", "Z", "이름", "지역", "보상"]],
+                hovertemplate=(
+                    "X=%{customdata[0]}<br>"
+                    "Y=%{customdata[1]}<br>"
+                    "Z=%{customdata[2]}<br>"
+                    "이름=%{customdata[3]}<br>"
+                    "지역=%{customdata[4]}<br>"
+                    "보상=%{customdata[5]}"
+                )
+            ))
 
     if show_npc:
         df_npc = pd.DataFrame([
@@ -157,24 +161,26 @@ def plot_virtual_map_interactive(data):
                 "Z": n["location"][2],
                 "비고": n.get("notes", "")
             } for n in data["npcs"]
+            if filter_keyword in n["name"].lower()
         ])
-        fig.add_trace(go.Scatter(
-            x=df_npc["X"],
-            y=df_npc["Z"],
-            mode="markers+text",
-            name="NPC",
-            marker=dict(color="yellow", size=8),
-            text=df_npc["이름"],
-            textposition="top center",
-            customdata=df_npc[["X", "Y", "Z", "이름", "비고"]],
-            hovertemplate=(
-                "X=%{customdata[0]}<br>"
-                "Y=%{customdata[1]}<br>"
-                "Z=%{customdata[2]}<br>"
-                "이름=%{customdata[3]}<br>"
-                "비고=%{customdata[4]}"
-            )
-        ))
+        if not df_npc.empty:
+            fig.add_trace(go.Scatter(
+                x=df_npc["X"],
+                y=df_npc["Z"],
+                mode="markers+text",
+                name="NPC",
+                marker=dict(color="yellow", size=8),
+                text=df_npc["이름"],
+                textposition="top center",
+                customdata=df_npc[["X", "Y", "Z", "이름", "비고"]],
+                hovertemplate=(
+                    "X=%{customdata[0]}<br>"
+                    "Y=%{customdata[1]}<br>"
+                    "Z=%{customdata[2]}<br>"
+                    "이름=%{customdata[3]}<br>"
+                    "비고=%{customdata[4]}"
+                )
+            ))
 
     if show_tp:
         df_tp = pd.DataFrame([
@@ -185,27 +191,29 @@ def plot_virtual_map_interactive(data):
                 "Z": tp["location"][2],
                 "지역구분": tp["region_type"]
             } for tp in data["teleports"]
+            if filter_keyword in tp["name"].lower()
         ])
-        fig.add_trace(go.Scatter(
-            x=df_tp["X"],
-            y=df_tp["Z"],
-            mode="markers+text",
-            name="텔레포트",
-            marker=dict(color="purple", size=8),
-            text=df_tp["이름"],
-            textposition="top center",
-            customdata=df_tp[["X", "Y", "Z", "이름", "지역구분"]],
-            hovertemplate=(
-                "X=%{customdata[0]}<br>"
-                "Y=%{customdata[1]}<br>"
-                "Z=%{customdata[2]}<br>"
-                "이름=%{customdata[3]}<br>"
-                "지역구분=%{customdata[4]}"
-            )
-        ))
+        if not df_tp.empty:
+            fig.add_trace(go.Scatter(
+                x=df_tp["X"],
+                y=df_tp["Z"],
+                mode="markers+text",
+                name="텔레포트",
+                marker=dict(color="purple", size=8),
+                text=df_tp["이름"],
+                textposition="top center",
+                customdata=df_tp[["X", "Y", "Z", "이름", "지역구분"]],
+                hovertemplate=(
+                    "X=%{customdata[0]}<br>"
+                    "Y=%{customdata[1]}<br>"
+                    "Z=%{customdata[2]}<br>"
+                    "이름=%{customdata[3]}<br>"
+                    "지역구분=%{customdata[4]}"
+                )
+            ))
 
     if not fig.data:
-        st.warning("표시할 데이터가 없습니다.")
+        st.warning("해당 이름과 일치하는 항목이 없습니다.")
         return
 
     fig.update_layout(
@@ -332,3 +340,4 @@ elif tab_option == "좌표 검색":
 elif tab_option == "가상 지도":
     st.title("가상 지도 시각화 (드래그 이동 / 휠 줌)")
     plot_virtual_map_interactive(data)
+
