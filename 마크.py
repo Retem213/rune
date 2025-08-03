@@ -106,8 +106,7 @@ def search_data(keyword, data):
 
 # ------------------ 지도 기능 ------------------
 def plot_virtual_map_interactive(data):
-    st.markdown("#### 표시할 항목 이름 검색 (부분 일치)")
-    filter_keyword = st.text_input("이름 필터", value="").strip().lower()
+    filter_keyword = st.text_input("", value="").strip().lower()
 
     col1, col2, col3 = st.columns(3)
     with col1:
@@ -340,4 +339,5 @@ elif tab_option == "좌표 검색":
 elif tab_option == "가상 지도":
     st.title("가상 지도 시각화 (드래그 이동 / 휠 줌)")
     plot_virtual_map_interactive(data)
+
 
