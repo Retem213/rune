@@ -116,23 +116,17 @@ def plot_virtual_map_interactive(data):
     with col3:
         show_tp = st.checkbox("텔레포트 표시", value=True)
 
-    col4, col5, col6 = st.columns(3)
-    with col4:
-        show_dungeon_labels = st.checkbox("던전 이름 표시", value=True)
-    with col5:
-        show_npc_labels = st.checkbox("NPC 이름 표시", value=True)
-    with col6:
-        show_tp_labels = st.checkbox("텔레포트 이름 표시", value=True)
-
     fig = go.Figure()
 
     # --- 던전 ---
     if show_dungeon:
         dungeon_names = [d["name"] for d in data["dungeons"]]
         selected_dungeons = []
-        with st.expander("던전 목록", expanded=False):
+
+        with st.expander("던전 목록", expanded=True):
+            toggle_dungeon_names = st.checkbox("던전 이름 전체 표시 ON/OFF", value=True, key="toggle_dungeon_names")
             for i, name in enumerate(dungeon_names):
-                checked = st.checkbox(name, key=f"dungeon_{i}_{name}", value=True)
+                checked = st.checkbox(f"◻ {name}", key=f"dungeon_{i}_{name}", value=toggle_dungeon_names)
                 if checked:
                     selected_dungeons.append(name)
 
@@ -150,10 +144,10 @@ def plot_virtual_map_interactive(data):
         fig.add_trace(go.Scatter(
             x=df_dungeon["X"],
             y=df_dungeon["Z"],
-            mode="markers+text" if show_dungeon_labels else "markers",
+            mode="markers+text",
             name="던전",
             marker=dict(color="red", size=8),
-            text=df_dungeon["이름"].where(df_dungeon["이름"].isin(selected_dungeons), "") if show_dungeon_labels else None,
+            text=df_dungeon["이름"].where(df_dungeon["이름"].isin(selected_dungeons), ""),
             textposition="top center",
             customdata=df_dungeon[["X", "Y", "Z", "이름", "지역", "보상"]],
             hovertemplate=(
@@ -170,9 +164,11 @@ def plot_virtual_map_interactive(data):
     if show_npc:
         npc_names = [n["name"] for n in data["npcs"]]
         selected_npcs = []
-        with st.expander("NPC 목록", expanded=False):
+
+        with st.expander("NPC 목록", expanded=True):
+            toggle_npc_names = st.checkbox("NPC 이름 전체 표시 ON/OFF", value=True, key="toggle_npc_names")
             for i, name in enumerate(npc_names):
-                checked = st.checkbox(name, key=f"npc_{i}_{name}", value=True)
+                checked = st.checkbox(f"◻ {name}", key=f"npc_{i}_{name}", value=toggle_npc_names)
                 if checked:
                     selected_npcs.append(name)
 
@@ -189,10 +185,10 @@ def plot_virtual_map_interactive(data):
         fig.add_trace(go.Scatter(
             x=df_npc["X"],
             y=df_npc["Z"],
-            mode="markers+text" if show_npc_labels else "markers",
+            mode="markers+text",
             name="NPC",
             marker=dict(color="yellow", size=8),
-            text=df_npc["이름"].where(df_npc["이름"].isin(selected_npcs), "") if show_npc_labels else None,
+            text=df_npc["이름"].where(df_npc["이름"].isin(selected_npcs), ""),
             textposition="top center",
             customdata=df_npc[["X", "Y", "Z", "이름", "비고"]],
             hovertemplate=(
@@ -208,9 +204,11 @@ def plot_virtual_map_interactive(data):
     if show_tp:
         tp_names = [tp["name"] for tp in data["teleports"]]
         selected_tps = []
-        with st.expander("텔레포트 목록", expanded=False):
+
+        with st.expander("텔레포트 목록", expanded=True):
+            toggle_tp_names = st.checkbox("텔레포트 이름 전체 표시 ON/OFF", value=True, key="toggle_tp_names")
             for i, name in enumerate(tp_names):
-                checked = st.checkbox(name, key=f"tp_{i}_{name}", value=True)
+                checked = st.checkbox(f"◻ {name}", key=f"tp_{i}_{name}", value=toggle_tp_names)
                 if checked:
                     selected_tps.append(name)
 
@@ -227,10 +225,10 @@ def plot_virtual_map_interactive(data):
         fig.add_trace(go.Scatter(
             x=df_tp["X"],
             y=df_tp["Z"],
-            mode="markers+text" if show_tp_labels else "markers",
+            mode="markers+text",
             name="텔레포트",
             marker=dict(color="purple", size=8),
-            text=df_tp["이름"].where(df_tp["이름"].isin(selected_tps), "") if show_tp_labels else None,
+            text=df_tp["이름"].where(df_tp["이름"].isin(selected_tps), ""),
             textposition="top center",
             customdata=df_tp[["X", "Y", "Z", "이름", "지역구분"]],
             hovertemplate=(
@@ -251,6 +249,7 @@ def plot_virtual_map_interactive(data):
         dragmode="pan",
     )
     st.plotly_chart(fig, use_container_width=True, config={"scrollZoom": True})
+
 # ------------------ Streamlit ------------------
 st.set_page_config(layout="wide")
 st.sidebar.title("메뉴")
@@ -368,6 +367,7 @@ elif tab_option == "좌표 검색":
 elif tab_option == "가상 지도":
     st.title("가상 지도 시각화 (드래그 이동 / 휠 줌)")
     plot_virtual_map_interactive(data)
+
 
 
 
