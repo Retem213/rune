@@ -362,8 +362,9 @@ elif tab_option == "좌표 검색":
 
 # ------------------ 가상 지도 탭 ------------------
 elif tab_option == "가상 지도":
-    st.title("가상 지도 시각화 (드래그 이동 / 휠 줌)")
+    st.title("가상 지도 시각화")
     plot_virtual_map_interactive(data)
+
 
 
 
