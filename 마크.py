@@ -194,8 +194,7 @@ def plot_virtual_map_interactive(data, mode="normal"):
             ))
 
     elif mode == "war":
-        # 전쟁지도: 던전/NPC 제거, 새로운 카테고리 표시
-        war_categories = [("Dungeon Boys","blue"), ("Wasobeso","green"), ("Tangled Dahye","orange")]
+        war_categories = [("던전보이즈","green"), ("와쏘베쏘","blue"), ("탱글다혜","brown")]
         for cat_name, color in war_categories:
             if cat_name in data:
                 df = pd.DataFrame([{"이름": item["name"], "X": item["location"][0], "Y": item["location"][1], "Z": item["location"][2]} for item in data[cat_name]])
@@ -242,5 +241,6 @@ if tab_option == "가상 지도":
 elif tab_option == "전쟁지도":
     st.title("전쟁지도")
     plot_virtual_map_interactive(data, mode="war")
+
 
 
