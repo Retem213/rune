@@ -79,18 +79,8 @@ data = {
     ],
     "Tangled Dahye": [
         {"name": "임시 주성", "location": [333, 333, 333]},
-    ],
-    "Dungeon Boys": [
-        {"name": "임시 주성", "location": [111, 111, 111]},
-    ],
-    "Wasobeso": [
-        {"name": "임시 주성", "location": [222, 222, 222]},
-    ],
-    "Tangled Dahye": [
-        {"name": "임시 주성", "location": [333, 333, 333]},
     ]
 }
-
 
 
 # ------------------ 거리 계산 ------------------
@@ -127,12 +117,10 @@ def plot_virtual_map_interactive(data, mode="normal"):
     fig = go.Figure()
 
     if mode == "normal":
-        # --- 사이드바: 표시 토글 ---
         show_dungeon = st.sidebar.checkbox("던전 표시", value=True)
         show_npc = st.sidebar.checkbox("NPC 표시", value=True)
         show_tp = st.sidebar.checkbox("텔레포트 표시", value=True)
 
-        # 던전 표시
         if show_dungeon:
             dungeon_names = [d["name"] for d in data["dungeons"]]
             selected_dungeons = []
@@ -143,17 +131,21 @@ def plot_virtual_map_interactive(data, mode="normal"):
                     if checked:
                         selected_dungeons.append(name)
 
-            df_dungeon = pd.DataFrame([{"이름": d["name"], "X": d["location"][0], "Y": d["location"][1], "Z": d["location"][2], "지역": d["region"], "보상": d["reward"]} for d in data["dungeons"]])
+            df_dungeon = pd.DataFrame([
+                {"이름": d["name"], "X": d["location"][0], "Y": d["location"][1], "Z": d["location"][2],
+                 "지역": d["region"], "보상": d["reward"]}
+                for d in data["dungeons"]
+            ])
             fig.add_trace(go.Scatter(
                 x=df_dungeon["X"], y=df_dungeon["Z"], mode="markers+text", name="던전",
                 marker=dict(color="red", size=8),
                 text=df_dungeon["이름"].where(df_dungeon["이름"].isin(selected_dungeons), ""),
                 textposition="top center",
-                customdata=df_dungeon[["X","Y","Z","이름","지역","보상"]],
-                hovertemplate="X=%{customdata[0]}<br>Y=%{customdata[1]}<br>Z=%{customdata[2]}<br>이름=%{customdata[3]}<br>지역=%{customdata[4]}<br>보상=%{customdata[5]}"
+                customdata=df_dungeon[["X", "Y", "Z", "이름", "지역", "보상"]],
+                hovertemplate="X=%{customdata[0]}<br>Y=%{customdata[1]}<br>Z=%{customdata[2]}<br>"
+                              "이름=%{customdata[3]}<br>지역=%{customdata[4]}<br>보상=%{customdata[5]}"
             ))
 
-        # NPC 표시
         if show_npc:
             npc_names = [n["name"] for n in data["npcs"]]
             selected_npcs = []
@@ -164,19 +156,27 @@ def plot_virtual_map_interactive(data, mode="normal"):
                     if checked:
                         selected_npcs.append(name)
 
-            df_npc = pd.DataFrame([{"이름": n["name"], "X": n["location"][0], "Y": n["location"][1], "Z": n["location"][2], "비고": n.get("notes","")} for n in data["npcs"]])
+            df_npc = pd.DataFrame([
+                {"이름": n["name"], "X": n["location"][0], "Y": n["location"][1], "Z": n["location"][2],
+                 "비고": n.get("notes", "")}
+                for n in data["npcs"]
+            ])
             fig.add_trace(go.Scatter(
                 x=df_npc["X"], y=df_npc["Z"], mode="markers+text", name="NPC",
                 marker=dict(color="yellow", size=8),
                 text=df_npc["이름"].where(df_npc["이름"].isin(selected_npcs), ""),
                 textposition="top center",
-                customdata=df_npc[["X","Y","Z","이름","비고"]],
-                hovertemplate="X=%{customdata[0]}<br>Y=%{customdata[1]}<br>Z=%{customdata[2]}<br>이름=%{customdata[3]}<br>비고=%{customdata[4]}"
+                customdata=df_npc[["X", "Y", "Z", "이름", "비고"]],
+                hovertemplate="X=%{customdata[0]}<br>Y=%{customdata[1]}<br>Z=%{customdata[2]}<br>"
+                              "이름=%{customdata[3]}<br>비고=%{customdata[4]}"
             ))
 
-        # 텔레포트 표시
         if show_tp:
-            df_tp = pd.DataFrame([{"이름": tp["name"], "X": tp["location"][0], "Y": tp["location"][1], "Z": tp["location"][2], "지역구분": tp["region_type"]} for tp in data["teleports"]])
+            df_tp = pd.DataFrame([
+                {"이름": tp["name"], "X": tp["location"][0], "Y": tp["location"][1], "Z": tp["location"][2],
+                 "지역구분": tp["region_type"]}
+                for tp in data["teleports"]
+            ])
             tp_names = df_tp["이름"].tolist()
             selected_tps = []
             with st.sidebar.expander("텔레포트 목록", expanded=False):
@@ -190,37 +190,42 @@ def plot_virtual_map_interactive(data, mode="normal"):
                 marker=dict(color="purple", size=8),
                 text=df_tp["이름"].where(df_tp["이름"].isin(selected_tps), ""),
                 textposition="top center",
-                customdata=df_tp[["X","Y","Z","이름","지역구분"]],
-                hovertemplate="X=%{customdata[0]}<br>Y=%{customdata[1]}<br>Z=%{customdata[2]}<br>이름=%{customdata[3]}<br>지역구분=%{customdata[4]}"
+                customdata=df_tp[["X", "Y", "Z", "이름", "지역구분"]],
+                hovertemplate="X=%{customdata[0]}<br>Y=%{customdata[1]}<br>Z=%{customdata[2]}<br>"
+                              "이름=%{customdata[3]}<br>지역구분=%{customdata[4]}"
             ))
 
     elif mode == "war":
-        show_Dungeon_Boys = st.sidebar.checkbox("던전보이즈 표시", value=True)
-        show_Wasobeso = st.sidebar.checkbox("와쏘베쏘 표시", value=True)
-        show_Tangled_Dahye = st.sidebar.checkbox("탱글다혜 표시", value=True)
-        
-        war_categories = [("던전보이즈","green"), ("와쏘베쏘","blue"), ("탱글다혜","brown")]
+        war_categories = [("던전보이즈", "green"), ("와쏘베쏘", "blue"), ("탱글다혜", "brown")]
         for cat_name, color in war_categories:
             if cat_name in data:
-                df = pd.DataFrame([{"이름": item["name"], "X": item["location"][0], "Y": item["location"][1], "Z": item["location"][2]} for item in data[cat_name]])
+                df = pd.DataFrame([
+                    {"이름": item["name"], "X": item["location"][0], "Y": item["location"][1], "Z": item["location"][2]}
+                    for item in data[cat_name]
+                ])
                 if not df.empty:
                     fig.add_trace(go.Scatter(
                         x=df["X"], y=df["Z"], mode="markers+text", name=cat_name,
                         marker=dict(color=color, size=8),
                         text=df["이름"],
                         textposition="top center",
-                        customdata=df[["X","Y","Z","이름"]],
-                        hovertemplate="X=%{customdata[0]}<br>Y=%{customdata[1]}<br>Z=%{customdata[2]}<br>이름=%{customdata[3]}"
+                        customdata=df[["X", "Y", "Z", "이름"]],
+                        hovertemplate="X=%{customdata[0]}<br>Y=%{customdata[1]}<br>"
+                                      "Z=%{customdata[2]}<br>이름=%{customdata[3]}"
                     ))
-        # 전쟁지도에도 텔레포트 표시
-        df_tp = pd.DataFrame([{"이름": tp["name"], "X": tp["location"][0], "Y": tp["location"][1], "Z": tp["location"][2], "지역구분": tp["region_type"]} for tp in data["teleports"]])
+        df_tp = pd.DataFrame([
+            {"이름": tp["name"], "X": tp["location"][0], "Y": tp["location"][1], "Z": tp["location"][2],
+             "지역구분": tp["region_type"]}
+            for tp in data["teleports"]
+        ])
         fig.add_trace(go.Scatter(
             x=df_tp["X"], y=df_tp["Z"], mode="markers+text", name="텔레포트",
             marker=dict(color="purple", size=8),
             text=df_tp["이름"],
             textposition="top center",
-            customdata=df_tp[["X","Y","Z","이름","지역구분"]],
-            hovertemplate="X=%{customdata[0]}<br>Y=%{customdata[1]}<br>Z=%{customdata[2]}<br>이름=%{customdata[3]}<br>지역구분=%{customdata[4]}"
+            customdata=df_tp[["X", "Y", "Z", "이름", "지역구분"]],
+            hovertemplate="X=%{customdata[0]}<br>Y=%{customdata[1]}<br>"
+                          "Z=%{customdata[2]}<br>이름=%{customdata[3]}<br>지역구분=%{customdata[4]}"
         ))
 
     if not fig.data:
@@ -256,18 +261,12 @@ if tab_option == "검색기능":
         st.session_state["search_triggered"] = False
         st.session_state["show_all"] = True
 
-
     col_input, col_button = st.columns([5, 1])
     with col_input:
-        st.text_input(
-            "검색어",
-            key="keyword",
-            placeholder="검색어 입력 후 엔터",
-            on_change=trigger_search
-        )
+        st.text_input("검색어", key="keyword", placeholder="검색어 입력 후 엔터", on_change=trigger_search)
     with col_button:
-        st.markdown(" ")  
-        st.markdown(" ")  
+        st.markdown(" ")
+        st.markdown(" ")
         st.button("검색", on_click=trigger_search)
 
     st.button("모든 항목 보기", on_click=show_all_items)
@@ -286,23 +285,16 @@ if tab_option == "검색기능":
                     if item["type"] == "던전":
                         st.write(f"지역: {item['region']}")
                         st.write(f"보상: {item['reward']}")
-                        st.write(
-                            f"가장 가까운 텔레포트: {item['nearest_tp']['name']} "
-                            f"({item['nearest_tp']['region_type']}) - {item['dist']}m"
-                        )
+                        st.write(f"가장 가까운 텔레포트: {item['nearest_tp']['name']} ({item['nearest_tp']['region_type']}) - {item['dist']}m")
                     elif item["type"] == "NPC":
                         if item.get("notes"):
                             st.write(f"비고: {item['notes']}")
-                        st.write(
-                            f"가장 가까운 텔레포트: {item['nearest_tp']['name']} "
-                            f"({item['nearest_tp']['region_type']}) - {item['dist']}m"
-                        )
+                        st.write(f"가장 가까운 텔레포트: {item['nearest_tp']['name']} ({item['nearest_tp']['region_type']}) - {item['dist']}m")
                     elif item["type"] == "텔레포트":
                         st.write(f"지역 구분: {item['region_type']}")
                     st.markdown("---")
 
         st.session_state["search_triggered"] = False
-
 
 # ------------------ 카테고리 탭 ------------------
 elif tab_option == "카테고리":
@@ -323,7 +315,6 @@ elif tab_option == "카테고리":
                 reward = reward.strip()
                 if reward and not reward.endswith("G"):
                     reward_set.add(reward)
-
         for reward in sorted(reward_set):
             with st.expander(reward):
                 related = [d for d in data["dungeons"] if reward in d["reward"]]
@@ -347,11 +338,9 @@ elif tab_option == "좌표 검색":
 elif tab_option == "가상 지도":
     st.title("가상 지도")
     plot_virtual_map_interactive(data)
+
 elif tab_option == "전쟁지도":
     st.title("전쟁지도")
     plot_virtual_map_interactive(data, mode="war")
-
-
-
 
 
