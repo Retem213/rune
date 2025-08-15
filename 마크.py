@@ -113,7 +113,6 @@ def search_data(keyword, data):
     return results
 
 # ------------------ 지도 기능 ------------------
-# ------------------ 지도 기능 ------------------
 def plot_virtual_map_interactive(data, mode="normal"):
     fig = go.Figure()
 
@@ -195,6 +194,7 @@ def plot_virtual_map_interactive(data, mode="normal"):
             ))
 
     elif mode == "war":
+        # 전쟁지도: 던전/NPC 제거, 새로운 카테고리 표시
         war_categories = [("Dungeon Boys","blue"), ("Wasobeso","green"), ("Tangled Dahye","orange")]
         for cat_name, color in war_categories:
             if cat_name in data:
@@ -202,19 +202,33 @@ def plot_virtual_map_interactive(data, mode="normal"):
                 if not df.empty:
                     fig.add_trace(go.Scatter(
                         x=df["X"], y=df["Z"], mode="markers+text", name=cat_name,
-                        marker=dict(color=color, size=10),
+                        marker=dict(color=color, size=8),
                         text=df["이름"],
                         textposition="top center",
                         customdata=df[["X","Y","Z","이름"]],
                         hovertemplate="X=%{customdata[0]}<br>Y=%{customdata[1]}<br>Z=%{customdata[2]}<br>이름=%{customdata[3]}"
                     ))
 
+        # 전쟁지도에서도 텔레포트 표시
         df_tp = pd.DataFrame([
             {"이름": tp["name"], "X": tp["location"][0], "Y": tp["location"][1], "Z": tp["location"][2],
              "지역구분": tp["region_type"]} for tp in data["teleports"]
         ])
         fig.add_trace(go.Scatter(
-            x=df_tp["X"], y=df_tp["Z"], mode="markers+text", name
+            x=df_tp["X"], y=df_tp["Z"], mode="markers+text", name="텔레포트",
+            marker=dict(color="purple", size=8),
+            text=df_tp["이름"],
+            textposition="top center",
+            customdata=df_tp[["X","Y","Z","이름","지역구분"]],
+            hovertemplate="X=%{customdata[0]}<br>Y=%{customdata[1]}<br>Z=%{customdata[2]}<br>이름=%{customdata[3]}<br>지역구분=%{customdata[4]}"
+        ))
+
+    if not fig.data:
+        st.warning("표시할 데이터가 없습니다.")
+        return
+
+    fig.update_layout(height=700, dragmode="pan")
+    st.plotly_chart(fig, use_container_width=True, config={"scrollZoom": True})
 
 # ------------------ Streamlit ------------------
 st.set_page_config(layout="wide")
@@ -222,14 +236,11 @@ st.sidebar.title("메뉴")
 
 tab_option = st.sidebar.radio("탭 선택", ["검색기능", "카테고리", "좌표 검색", "가상 지도", "전쟁지도"])
 
-# ------------------ 가상 지도 탭 ------------------
 if tab_option == "가상 지도":
     st.title("가상 지도")
-    plot_virtual_map_interactive(data)
-
-# ------------------ 전쟁지도 탭 ------------------
+    plot_virtual_map_interactive(data, mode="normal")
 elif tab_option == "전쟁지도":
     st.title("전쟁지도")
-    plot_virtual_map_interactive(data)
+    plot_virtual_map_interactive(data, mode="war")
 
 
