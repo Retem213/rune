@@ -70,6 +70,15 @@ data = {
         {"name": "글리야 마을 남쪽", "location": [140, 70, 774], "region_type": "던전"},
         {"name": "글리야 마을 북동쪽", "location": [246, 68, 115], "region_type": "던전"},
         {"name": "글리야 마을 북서쪽", "location": [-235, 71, 29], "region_type": "던전"}
+    ],
+    "Dungeon Boys": [
+        {"name": "임시 주성", "location": [111, 111, 111]},
+    ],
+    "Wasobeso": [
+        {"name": "임시 주성", "location": [222, 222, 222]},
+    ],
+    "Tangled Dahye": [
+        {"name": "임시 주성", "location": [333, 333, 333]},
     ]
 }
 
@@ -104,145 +113,108 @@ def search_data(keyword, data):
     return results
 
 # ------------------ 지도 기능 ------------------
-def plot_virtual_map_interactive(data):
-    # --- 사이드바: 표시 토글 ---
-    show_dungeon = st.sidebar.checkbox("던전 표시", value=True)
-    show_npc = st.sidebar.checkbox("NPC 표시", value=True)
-    show_tp = st.sidebar.checkbox("텔레포트 표시", value=True)
-
+# ------------------ 지도 기능 ------------------
+def plot_virtual_map_interactive(data, mode="normal"):
     fig = go.Figure()
 
-    # --- 던전 ---
-    if show_dungeon:
-        dungeon_names = [d["name"] for d in data["dungeons"]]
-        selected_dungeons = []
+    if mode == "normal":
+        # --- 사이드바: 표시 토글 ---
+        show_dungeon = st.sidebar.checkbox("던전 표시", value=True)
+        show_npc = st.sidebar.checkbox("NPC 표시", value=True)
+        show_tp = st.sidebar.checkbox("텔레포트 표시", value=True)
 
-        with st.sidebar.expander("던전 목록", expanded=False):
-            toggle_dungeon_names = st.checkbox("던전 이름 전체 표시 ON/OFF", value=True, key="toggle_dungeon_names")
-            for i, name in enumerate(dungeon_names):
-                checked = st.checkbox(f"{name}", key=f"dungeon_{i}_{name}", value=toggle_dungeon_names)
-                if checked:
-                    selected_dungeons.append(name)
+        # --- 던전 ---
+        if show_dungeon:
+            dungeon_names = [d["name"] for d in data["dungeons"]]
+            selected_dungeons = []
+            with st.sidebar.expander("던전 목록", expanded=False):
+                toggle_dungeon_names = st.checkbox("던전 이름 전체 표시 ON/OFF", value=True, key="toggle_dungeon_names")
+                for i, name in enumerate(dungeon_names):
+                    checked = st.checkbox(f"{name}", key=f"dungeon_{i}_{name}", value=toggle_dungeon_names)
+                    if checked:
+                        selected_dungeons.append(name)
 
-        df_dungeon = pd.DataFrame([
-            {
-                "이름": d["name"],
-                "X": d["location"][0],
-                "Y": d["location"][1],
-                "Z": d["location"][2],
-                "지역": d["region"],
-                "보상": d["reward"]
-            } for d in data["dungeons"]
-        ])
+            df_dungeon = pd.DataFrame([
+                {"이름": d["name"], "X": d["location"][0], "Y": d["location"][1], "Z": d["location"][2],
+                 "지역": d["region"], "보상": d["reward"]} for d in data["dungeons"]
+            ])
+            fig.add_trace(go.Scatter(
+                x=df_dungeon["X"], y=df_dungeon["Z"], mode="markers+text", name="던전",
+                marker=dict(color="red", size=8),
+                text=df_dungeon["이름"].where(df_dungeon["이름"].isin(selected_dungeons), ""),
+                textposition="top center",
+                customdata=df_dungeon[["X","Y","Z","이름","지역","보상"]],
+                hovertemplate="X=%{customdata[0]}<br>Y=%{customdata[1]}<br>Z=%{customdata[2]}<br>이름=%{customdata[3]}<br>지역=%{customdata[4]}<br>보상=%{customdata[5]}"
+            ))
 
-        fig.add_trace(go.Scatter(
-            x=df_dungeon["X"],
-            y=df_dungeon["Z"],
-            mode="markers+text",
-            name="던전",
-            marker=dict(color="red", size=8),
-            text=df_dungeon["이름"].where(df_dungeon["이름"].isin(selected_dungeons), ""),
-            textposition="top center",
-            customdata=df_dungeon[["X", "Y", "Z", "이름", "지역", "보상"]],
-            hovertemplate=(
-                "X=%{customdata[0]}<br>"
-                "Y=%{customdata[1]}<br>"
-                "Z=%{customdata[2]}<br>"
-                "이름=%{customdata[3]}<br>"
-                "지역=%{customdata[4]}<br>"
-                "보상=%{customdata[5]}"
-            )
-        ))
+        # --- NPC ---
+        if show_npc:
+            npc_names = [n["name"] for n in data["npcs"]]
+            selected_npcs = []
+            with st.sidebar.expander("NPC 목록", expanded=False):
+                toggle_npc_names = st.checkbox("NPC 이름 전체 표시 ON/OFF", value=True, key="toggle_npc_names")
+                for i, name in enumerate(npc_names):
+                    checked = st.checkbox(f"{name}", key=f"npc_{i}_{name}", value=toggle_npc_names)
+                    if checked:
+                        selected_npcs.append(name)
 
-    # --- NPC ---
-    if show_npc:
-        npc_names = [n["name"] for n in data["npcs"]]
-        selected_npcs = []
+            df_npc = pd.DataFrame([
+                {"이름": n["name"], "X": n["location"][0], "Y": n["location"][1], "Z": n["location"][2],
+                 "비고": n.get("notes","")} for n in data["npcs"]
+            ])
+            fig.add_trace(go.Scatter(
+                x=df_npc["X"], y=df_npc["Z"], mode="markers+text", name="NPC",
+                marker=dict(color="yellow", size=8),
+                text=df_npc["이름"].where(df_npc["이름"].isin(selected_npcs), ""),
+                textposition="top center",
+                customdata=df_npc[["X","Y","Z","이름","비고"]],
+                hovertemplate="X=%{customdata[0]}<br>Y=%{customdata[1]}<br>Z=%{customdata[2]}<br>이름=%{customdata[3]}<br>비고=%{customdata[4]}"
+            ))
 
-        with st.sidebar.expander("NPC 목록", expanded=False):
-            toggle_npc_names = st.checkbox("NPC 이름 전체 표시 ON/OFF", value=True, key="toggle_npc_names")
-            for i, name in enumerate(npc_names):
-                checked = st.checkbox(f"{name}", key=f"npc_{i}_{name}", value=toggle_npc_names)
-                if checked:
-                    selected_npcs.append(name)
+        # --- 텔레포트 ---
+        if show_tp:
+            df_tp = pd.DataFrame([
+                {"이름": tp["name"], "X": tp["location"][0], "Y": tp["location"][1], "Z": tp["location"][2],
+                 "지역구분": tp["region_type"]} for tp in data["teleports"]
+            ])
+            tp_names = df_tp["이름"].tolist()
+            selected_tps = []
+            with st.sidebar.expander("텔레포트 목록", expanded=False):
+                toggle_tp_names = st.checkbox("텔레포트 이름 전체 표시 ON/OFF", value=True, key="toggle_tp_names")
+                for i, name in enumerate(tp_names):
+                    checked = st.checkbox(f"{name}", key=f"tp_{i}_{name}", value=toggle_tp_names)
+                    if checked:
+                        selected_tps.append(name)
+            fig.add_trace(go.Scatter(
+                x=df_tp["X"], y=df_tp["Z"], mode="markers+text", name="텔레포트",
+                marker=dict(color="purple", size=8),
+                text=df_tp["이름"].where(df_tp["이름"].isin(selected_tps), ""),
+                textposition="top center",
+                customdata=df_tp[["X","Y","Z","이름","지역구분"]],
+                hovertemplate="X=%{customdata[0]}<br>Y=%{customdata[1]}<br>Z=%{customdata[2]}<br>이름=%{customdata[3]}<br>지역구분=%{customdata[4]}"
+            ))
 
-        df_npc = pd.DataFrame([
-            {
-                "이름": n["name"],
-                "X": n["location"][0],
-                "Y": n["location"][1],
-                "Z": n["location"][2],
-                "비고": n.get("notes", "")
-            } for n in data["npcs"]
-        ])
-
-        fig.add_trace(go.Scatter(
-            x=df_npc["X"],
-            y=df_npc["Z"],
-            mode="markers+text",
-            name="NPC",
-            marker=dict(color="yellow", size=8),
-            text=df_npc["이름"].where(df_npc["이름"].isin(selected_npcs), ""),
-            textposition="top center",
-            customdata=df_npc[["X", "Y", "Z", "이름", "비고"]],
-            hovertemplate=(
-                "X=%{customdata[0]}<br>"
-                "Y=%{customdata[1]}<br>"
-                "Z=%{customdata[2]}<br>"
-                "이름=%{customdata[3]}<br>"
-                "비고=%{customdata[4]}"
-            )
-        ))
-
-    # --- 텔레포트 ---
-    if show_tp:
-        tp_names = [tp["name"] for tp in data["teleports"]]
-        selected_tps = []
-
-        with st.sidebar.expander("텔레포트 목록", expanded=False):
-            toggle_tp_names = st.checkbox("텔레포트 이름 전체 표시 ON/OFF", value=True, key="toggle_tp_names")
-            for i, name in enumerate(tp_names):
-                checked = st.checkbox(f"{name}", key=f"tp_{i}_{name}", value=toggle_tp_names)
-                if checked:
-                    selected_tps.append(name)
+    elif mode == "war":
+        war_categories = [("Dungeon Boys","blue"), ("Wasobeso","green"), ("Tangled Dahye","orange")]
+        for cat_name, color in war_categories:
+            if cat_name in data:
+                df = pd.DataFrame([{"이름": item["name"], "X": item["location"][0], "Y": item["location"][1], "Z": item["location"][2]} for item in data[cat_name]])
+                if not df.empty:
+                    fig.add_trace(go.Scatter(
+                        x=df["X"], y=df["Z"], mode="markers+text", name=cat_name,
+                        marker=dict(color=color, size=10),
+                        text=df["이름"],
+                        textposition="top center",
+                        customdata=df[["X","Y","Z","이름"]],
+                        hovertemplate="X=%{customdata[0]}<br>Y=%{customdata[1]}<br>Z=%{customdata[2]}<br>이름=%{customdata[3]}"
+                    ))
 
         df_tp = pd.DataFrame([
-            {
-                "이름": tp["name"],
-                "X": tp["location"][0],
-                "Y": tp["location"][1],
-                "Z": tp["location"][2],
-                "지역구분": tp["region_type"]
-            } for tp in data["teleports"]
+            {"이름": tp["name"], "X": tp["location"][0], "Y": tp["location"][1], "Z": tp["location"][2],
+             "지역구분": tp["region_type"]} for tp in data["teleports"]
         ])
-
         fig.add_trace(go.Scatter(
-            x=df_tp["X"],
-            y=df_tp["Z"],
-            mode="markers+text",
-            name="텔레포트",
-            marker=dict(color="purple", size=8),
-            text=df_tp["이름"].where(df_tp["이름"].isin(selected_tps), ""),
-            textposition="top center",
-            customdata=df_tp[["X", "Y", "Z", "이름", "지역구분"]],
-            hovertemplate=(
-                "X=%{customdata[0]}<br>"
-                "Y=%{customdata[1]}<br>"
-                "Z=%{customdata[2]}<br>"
-                "이름=%{customdata[3]}<br>"
-                "지역구분=%{customdata[4]}"
-            )
-        ))
-
-    if not fig.data:
-        st.warning("표시할 데이터가 없습니다.")
-        return
-
-    fig.update_layout(
-        height=700,
-        dragmode="pan",
-    )
-    st.plotly_chart(fig, use_container_width=True, config={"scrollZoom": True})
+            x=df_tp["X"], y=df_tp["Z"], mode="markers+text", name
 
 # ------------------ Streamlit ------------------
 st.set_page_config(layout="wide")
@@ -259,4 +231,5 @@ if tab_option == "가상 지도":
 elif tab_option == "전쟁지도":
     st.title("전쟁지도")
     plot_virtual_map_interactive(data)
+
 
