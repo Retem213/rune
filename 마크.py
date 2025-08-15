@@ -237,7 +237,7 @@ def plot_virtual_map_interactive(data, mode="normal"):
              "지역구분": tp["region_type"]}
             for tp in data["teleports"]
         ])
-            tp_names = df_tp["이름"].tolist()
+        tp_names = df_tp["이름"].tolist()
         selected_tps = []
         with st.sidebar.expander("텔레포트 목록", expanded=False):
             toggle_tp_names = st.checkbox("텔레포트 이름 전체 표시 ON/OFF", value=True, key="toggle_war_tp_names")
@@ -370,6 +370,7 @@ elif tab_option == "가상 지도":
 elif tab_option == "전쟁지도":
     st.title("전쟁지도")
     plot_virtual_map_interactive(data, mode="war")
+
 
 
 
