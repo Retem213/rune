@@ -198,37 +198,37 @@ def plot_virtual_map_interactive(data, mode="normal"):
                           "이름=%{customdata[3]}<br>지역구분=%{customdata[4]}"
         ))
 
-    # ----- 전쟁지도 전용 표시 -----
+
     if mode == "war":
-        war_categories = [
-            ("Dungeon Boys", "던전보이즈", "green"),
-            ("Wasobeso", "와쏘베쏘", "blue"),
-            ("Tangled Dahye", "탱글다혜", "brown")
-        ]
+    war_categories = [
+        ("Dungeon Boys", "던전보이즈", "green"),
+        ("Wasobeso", "와쏘베쏘", "blue"),
+        ("Tangled Dahye", "탱글다혜", "brown")
+    ]
 
-        for data_key, display_name, color in war_categories:
-            if data_key in data:
-                df = pd.DataFrame([
-                    {"이름": item["name"], "X": item["location"][0], "Y": item["location"][1], "Z": item["location"][2]}
-                    for item in data[data_key]
-                ])
-                selected_names = []
-                with st.sidebar.expander(f"{display_name} 목록", expanded=False):
-                    toggle_names = st.checkbox(f"{display_name} 전체 표시 ON/OFF", value=True, key=f"toggle_war_names_{data_key}")
-                    for i, name in enumerate(df["이름"]):
-                        checked = st.checkbox(f"{name}", key=f"war_{data_key}_{i}", value=toggle_names)
-                        if checked:
-                            selected_names.append(name)
+    for data_key, display_name, color in war_categories:
+        if data_key in data:
+            df = pd.DataFrame([
+                {"이름": item["name"], "X": item["location"][0], "Y": item["location"][1], "Z": item["location"][2]}
+                for item in data[data_key]
+            ])
+            selected_names = []
+            with st.sidebar.expander(f"{display_name} 목록", expanded=False):
+                toggle_names = st.checkbox(f"{display_name} 전체 표시 ON/OFF", value=True, key=f"toggle_war_names_{data_key}")
+                for i, name in enumerate(df["이름"]):
+                    checked = st.checkbox(f"{name}", key=f"war_{data_key}_{i}", value=toggle_names)
+                    if checked:
+                        selected_names.append(name)
 
-                fig.add_trace(go.Scatter(
-                    x=df["X"], y=df["Z"], mode="markers+text", name=display_name,
-                    marker=dict(color=color, size=8),
-                    text=df["이름"].where(df["이름"].isin(selected_names), ""),
-                    textposition="top center",
-                    customdata=df[["X", "Y", "Z", "이름"]],
-                    hovertemplate="X=%{customdata[0]}<br>Y=%{customdata[1]}<br>"
-                                  "Z=%{customdata[2]}<br>이름=%{customdata[3]}"
-                ))
+            fig.add_trace(go.Scatter(
+                x=df["X"], y=df["Z"], mode="markers+text", name=display_name,
+                marker=dict(color=color, size=8),
+                text=df["이름"].where(df["이름"].isin(selected_names), ""),
+                textposition="top center",
+                customdata=df[["X", "Y", "Z", "이름"]],
+                hovertemplate="X=%{customdata[0]}<br>Y=%{customdata[1]}<br>"
+                              "Z=%{customdata[2]}<br>이름=%{customdata[3]}"
+            ))
 
     if not fig.data:
         st.warning("표시할 데이터가 없습니다.")
@@ -344,6 +344,7 @@ elif tab_option == "가상 지도":
 elif tab_option == "전쟁지도":
     st.title("전쟁지도")
     plot_virtual_map_interactive(data, mode="war")
+
 
 
 
