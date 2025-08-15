@@ -195,7 +195,11 @@ def plot_virtual_map_interactive(data, mode="normal"):
             ))
 
     elif mode == "war":
-        war_categories = [("Dungeon Boys","green"), ("Wasobeso","blue"), ("Tangled Dahye","brown")]
+        show_Dungeon_Boys = st.sidebar.checkbox("던전보이즈 표시", value=True)
+        show_Wasobeso = st.sidebar.checkbox("와쏘베쏘 표시", value=True)
+        show_Tangled_Dahye = st.sidebar.checkbox("탱글다혜 표시", value=True)
+        
+        war_categories = [("던전보이즈","green"), ("와쏘베쏘","blue"), ("탱글다혜","brown")]
         for cat_name, color in war_categories:
             if cat_name in data:
                 df = pd.DataFrame([{"이름": item["name"], "X": item["location"][0], "Y": item["location"][1], "Z": item["location"][2]} for item in data[cat_name]])
@@ -346,6 +350,7 @@ elif tab_option == "가상 지도":
 elif tab_option == "전쟁지도":
     st.title("전쟁지도")
     plot_virtual_map_interactive(data, mode="war")
+
 
 
 
