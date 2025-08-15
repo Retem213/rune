@@ -201,9 +201,6 @@ def plot_virtual_map_interactive(data, mode="normal"):
             ("Wasobeso", "와쏘베쏘", "blue"),
             ("Tangled Dahye", "탱글다혜", "brown")
         ]
-    
-        with st.sidebar.expander("전쟁 지도 표시 옵션", expanded=True):
-            show_war_names_toggle = st.checkbox("이름 전체 표시 ON/OFF", value=True, key="toggle_war_names")
 
         for data_key, display_name, color in war_categories:
             if data_key in data:
@@ -212,15 +209,16 @@ def plot_virtual_map_interactive(data, mode="normal"):
                     for item in data[data_key]
                 ])
     
-                # 체크박스 UI
+                group_names = df["이름"].tolist()
                 selected_names = []
+
                 with st.sidebar.expander(f"{display_name} 목록", expanded=False):
-                    for i, name in enumerate(df["이름"]):
-                        checked = st.checkbox(f"{name}", key=f"war_{data_key}_{i}", value=show_war_names_toggle)
+                    toggle_names = st.checkbox(f"{display_name} 전체 ON/OFF", value=True, key=f"toggle_{data_key}")
+                    for i, name in enumerate(group_names):
+                        checked = st.checkbox(f"{name}", key=f"{data_key}_{i}", value=toggle_names)
                         if checked:
                             selected_names.append(name)
-    
-                # 마커 표시
+
                 fig.add_trace(go.Scatter(
                     x=df["X"], y=df["Z"], mode="markers+text", name=display_name,
                     marker=dict(color=color, size=8),
@@ -231,7 +229,7 @@ def plot_virtual_map_interactive(data, mode="normal"):
                                   "Z=%{customdata[2]}<br>이름=%{customdata[3]}"
                 ))
 
-  
+    # 텔레포트 표시
         df_tp = pd.DataFrame([
             {"이름": tp["name"], "X": tp["location"][0], "Y": tp["location"][1], "Z": tp["location"][2],
              "지역구분": tp["region_type"]}
@@ -240,7 +238,7 @@ def plot_virtual_map_interactive(data, mode="normal"):
         tp_names = df_tp["이름"].tolist()
         selected_tps = []
         with st.sidebar.expander("텔레포트 목록", expanded=False):
-            toggle_tp_names = st.checkbox("텔레포트 이름 전체 표시 ON/OFF", value=True, key="toggle_war_tp_names")
+            toggle_tp_names = st.checkbox("텔레포트 전체 ON/OFF", value=True, key="toggle_war_tp_names")
             for i, name in enumerate(tp_names):
                 checked = st.checkbox(f"{name}", key=f"war_tp_{i}", value=toggle_tp_names)
                 if checked:
@@ -370,3 +368,4 @@ elif tab_option == "가상 지도":
 elif tab_option == "전쟁지도":
     st.title("전쟁지도")
     plot_virtual_map_interactive(data, mode="war")
+
