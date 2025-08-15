@@ -197,52 +197,52 @@ def plot_virtual_map_interactive(data, mode="normal"):
 
     elif mode == "war":
     # (데이터 키, 표시 이름, 색상) 순서로 매핑
-    war_categories = [
-        ("Dungeon Boys", "던전보이즈", "green"),
-        ("Wasobeso", "와쏘베쏘", "blue"),
-        ("Tangled Dahye", "탱글다혜", "brown")
-    ]
+        war_categories = [
+            ("Dungeon Boys", "던전보이즈", "green"),
+            ("Wasobeso", "와쏘베쏘", "blue"),
+            ("Tangled Dahye", "탱글다혜", "brown")
+        ]
 
-    with st.sidebar.expander("전쟁 지도 표시 옵션", expanded=True):
-        selected_categories = []
-        toggle_all = st.checkbox("모든 이름 표시 ON/OFF", value=True, key="toggle_war_names")
+        with st.sidebar.expander("전쟁 지도 표시 옵션", expanded=True):
+            selected_categories = []
+            toggle_all = st.checkbox("모든 이름 표시 ON/OFF", value=True, key="toggle_war_names")
 
-        for data_key, display_name, color in war_categories:
-            if data_key in data:
-                checked = st.checkbox(display_name, value=toggle_all, key=f"war_{data_key}")
-                if checked:
-                    selected_categories.append(display_name)
+            for data_key, display_name, color in war_categories:
+                if data_key in data:
+                    checked = st.checkbox(display_name, value=toggle_all, key=f"war_{data_key}")
+                    if checked:
+                        selected_categories.append(display_name)
 
-                df = pd.DataFrame([
-                    {"이름": item["name"], "X": item["location"][0], "Y": item["location"][1], "Z": item["location"][2]}
-                    for item in data[data_key]
-                ])
-                if not df.empty:
-                    fig.add_trace(go.Scatter(
-                        x=df["X"], y=df["Z"], mode="markers+text", name=display_name,
-                        marker=dict(color=color, size=8),
-                        text=df["이름"].where(df["이름"].isin(selected_categories), ""),
-                        textposition="top center",
-                        customdata=df[["X", "Y", "Z", "이름"]],
-                        hovertemplate="X=%{customdata[0]}<br>Y=%{customdata[1]}<br>"
-                                      "Z=%{customdata[2]}<br>이름=%{customdata[3]}"
-                    ))
+                    df = pd.DataFrame([
+                        {"이름": item["name"], "X": item["location"][0], "Y": item["location"][1], "Z": item["location"][2]}
+                        for item in data[data_key]
+                    ])
+                    if not df.empty:
+                        fig.add_trace(go.Scatter(
+                            x=df["X"], y=df["Z"], mode="markers+text", name=display_name,
+                            marker=dict(color=color, size=8),
+                            text=df["이름"].where(df["이름"].isin(selected_categories), ""),
+                            textposition="top center",
+                            customdata=df[["X", "Y", "Z", "이름"]],
+                            hovertemplate="X=%{customdata[0]}<br>Y=%{customdata[1]}<br>"
+                                          "Z=%{customdata[2]}<br>이름=%{customdata[3]}"
+                        ))
 
     # 텔레포트도 같이 표시
-    df_tp = pd.DataFrame([
-        {"이름": tp["name"], "X": tp["location"][0], "Y": tp["location"][1], "Z": tp["location"][2],
-         "지역구분": tp["region_type"]}
-        for tp in data["teleports"]
-    ])
-    fig.add_trace(go.Scatter(
-        x=df_tp["X"], y=df_tp["Z"], mode="markers+text", name="텔레포트",
-        marker=dict(color="purple", size=8),
-        text=df_tp["이름"],
-        textposition="top center",
-        customdata=df_tp[["X", "Y", "Z", "이름", "지역구분"]],
-        hovertemplate="X=%{customdata[0]}<br>Y=%{customdata[1]}<br>"
+        df_tp = pd.DataFrame([
+            {"이름": tp["name"], "X": tp["location"][0], "Y": tp["location"][1], "Z": tp["location"][2],
+             "지역구분": tp["region_type"]}
+            for tp in data["teleports"]
+        ])
+        fig.add_trace(go.Scatter(
+            x=df_tp["X"], y=df_tp["Z"], mode="markers+text", name="텔레포트",
+            marker=dict(color="purple", size=8),
+            text=df_tp["이름"],
+            textposition="top center",
+            customdata=df_tp[["X", "Y", "Z", "이름", "지역구분"]],
+            hovertemplate="X=%{customdata[0]}<br>Y=%{customdata[1]}<br>"
                       "Z=%{customdata[2]}<br>이름=%{customdata[3]}<br>지역구분=%{customdata[4]}"
-    ))
+        ))
     if not fig.data:
         st.warning("표시할 데이터가 없습니다.")
         return
@@ -357,6 +357,7 @@ elif tab_option == "가상 지도":
 elif tab_option == "전쟁지도":
     st.title("전쟁지도")
     plot_virtual_map_interactive(data, mode="war")
+
 
 
 
