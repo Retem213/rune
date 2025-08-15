@@ -112,7 +112,7 @@ def search_data(keyword, data):
 
     return results
 
-# ------------------ 지도 기능 ------------------
+# ------------------ 가상 지도 / 전쟁지도 ------------------
 def plot_virtual_map_interactive(data, mode="normal"):
     fig = go.Figure()
 
@@ -122,7 +122,7 @@ def plot_virtual_map_interactive(data, mode="normal"):
         show_npc = st.sidebar.checkbox("NPC 표시", value=True)
         show_tp = st.sidebar.checkbox("텔레포트 표시", value=True)
 
-        # --- 던전 ---
+        # 던전 표시
         if show_dungeon:
             dungeon_names = [d["name"] for d in data["dungeons"]]
             selected_dungeons = []
@@ -133,10 +133,7 @@ def plot_virtual_map_interactive(data, mode="normal"):
                     if checked:
                         selected_dungeons.append(name)
 
-            df_dungeon = pd.DataFrame([
-                {"이름": d["name"], "X": d["location"][0], "Y": d["location"][1], "Z": d["location"][2],
-                 "지역": d["region"], "보상": d["reward"]} for d in data["dungeons"]
-            ])
+            df_dungeon = pd.DataFrame([{"이름": d["name"], "X": d["location"][0], "Y": d["location"][1], "Z": d["location"][2], "지역": d["region"], "보상": d["reward"]} for d in data["dungeons"]])
             fig.add_trace(go.Scatter(
                 x=df_dungeon["X"], y=df_dungeon["Z"], mode="markers+text", name="던전",
                 marker=dict(color="red", size=8),
@@ -146,7 +143,7 @@ def plot_virtual_map_interactive(data, mode="normal"):
                 hovertemplate="X=%{customdata[0]}<br>Y=%{customdata[1]}<br>Z=%{customdata[2]}<br>이름=%{customdata[3]}<br>지역=%{customdata[4]}<br>보상=%{customdata[5]}"
             ))
 
-        # --- NPC ---
+        # NPC 표시
         if show_npc:
             npc_names = [n["name"] for n in data["npcs"]]
             selected_npcs = []
@@ -157,10 +154,7 @@ def plot_virtual_map_interactive(data, mode="normal"):
                     if checked:
                         selected_npcs.append(name)
 
-            df_npc = pd.DataFrame([
-                {"이름": n["name"], "X": n["location"][0], "Y": n["location"][1], "Z": n["location"][2],
-                 "비고": n.get("notes","")} for n in data["npcs"]
-            ])
+            df_npc = pd.DataFrame([{"이름": n["name"], "X": n["location"][0], "Y": n["location"][1], "Z": n["location"][2], "비고": n.get("notes","")} for n in data["npcs"]])
             fig.add_trace(go.Scatter(
                 x=df_npc["X"], y=df_npc["Z"], mode="markers+text", name="NPC",
                 marker=dict(color="yellow", size=8),
@@ -170,12 +164,9 @@ def plot_virtual_map_interactive(data, mode="normal"):
                 hovertemplate="X=%{customdata[0]}<br>Y=%{customdata[1]}<br>Z=%{customdata[2]}<br>이름=%{customdata[3]}<br>비고=%{customdata[4]}"
             ))
 
-        # --- 텔레포트 ---
+        # 텔레포트 표시
         if show_tp:
-            df_tp = pd.DataFrame([
-                {"이름": tp["name"], "X": tp["location"][0], "Y": tp["location"][1], "Z": tp["location"][2],
-                 "지역구분": tp["region_type"]} for tp in data["teleports"]
-            ])
+            df_tp = pd.DataFrame([{"이름": tp["name"], "X": tp["location"][0], "Y": tp["location"][1], "Z": tp["location"][2], "지역구분": tp["region_type"]} for tp in data["teleports"]])
             tp_names = df_tp["이름"].tolist()
             selected_tps = []
             with st.sidebar.expander("텔레포트 목록", expanded=False):
@@ -194,7 +185,7 @@ def plot_virtual_map_interactive(data, mode="normal"):
             ))
 
     elif mode == "war":
-        war_categories = [("던전보이즈","green"), ("와쏘베쏘","blue"), ("탱글다혜","brown")]
+        war_categories = [("Dungeon Boys","green"), ("Wasobeso","blue"), ("Tangled Dahye","brown")]
         for cat_name, color in war_categories:
             if cat_name in data:
                 df = pd.DataFrame([{"이름": item["name"], "X": item["location"][0], "Y": item["location"][1], "Z": item["location"][2]} for item in data[cat_name]])
@@ -207,12 +198,8 @@ def plot_virtual_map_interactive(data, mode="normal"):
                         customdata=df[["X","Y","Z","이름"]],
                         hovertemplate="X=%{customdata[0]}<br>Y=%{customdata[1]}<br>Z=%{customdata[2]}<br>이름=%{customdata[3]}"
                     ))
-
-        # 전쟁지도에서도 텔레포트 표시
-        df_tp = pd.DataFrame([
-            {"이름": tp["name"], "X": tp["location"][0], "Y": tp["location"][1], "Z": tp["location"][2],
-             "지역구분": tp["region_type"]} for tp in data["teleports"]
-        ])
+        # 전쟁지도에도 텔레포트 표시
+        df_tp = pd.DataFrame([{"이름": tp["name"], "X": tp["location"][0], "Y": tp["location"][1], "Z": tp["location"][2], "지역구분": tp["region_type"]} for tp in data["teleports"]])
         fig.add_trace(go.Scatter(
             x=df_tp["X"], y=df_tp["Z"], mode="markers+text", name="텔레포트",
             marker=dict(color="purple", size=8),
@@ -229,18 +216,39 @@ def plot_virtual_map_interactive(data, mode="normal"):
     fig.update_layout(height=700, dragmode="pan")
     st.plotly_chart(fig, use_container_width=True, config={"scrollZoom": True})
 
-# ------------------ Streamlit ------------------
+# ------------------ Streamlit UI ------------------
 st.set_page_config(layout="wide")
 st.sidebar.title("메뉴")
 
 tab_option = st.sidebar.radio("탭 선택", ["검색기능", "카테고리", "좌표 검색", "가상 지도", "전쟁지도"])
 
-if tab_option == "가상 지도":
+if tab_option == "검색기능":
+    st.title("검색 기능")
+    keyword = st.text_input("검색어 입력")
+    results = search_data(keyword, data)
+    for cat in results:
+        st.subheader(cat)
+        df = pd.DataFrame(results[cat])
+        st.dataframe(df)
+
+elif tab_option == "카테고리":
+    st.title("카테고리별 보기")
+    category = st.selectbox("카테고리 선택", ["던전", "NPC", "텔레포트"])
+    df = pd.DataFrame(data[category.lower() + "s"])
+    st.dataframe(df)
+
+elif tab_option == "좌표 검색":
+    st.title("좌표 검색")
+    x = st.number_input("X 좌표")
+    y = st.number_input("Y 좌표")
+    z = st.number_input("Z 좌표")
+    nearest_tp, dist = get_nearest_teleport([x,y,z], data["teleports"])
+    st.write(f"가장 가까운 텔레포트: {nearest_tp['name']}, 거리: {dist}")
+
+elif tab_option == "가상 지도":
     st.title("가상 지도")
     plot_virtual_map_interactive(data, mode="normal")
+
 elif tab_option == "전쟁지도":
     st.title("전쟁지도")
     plot_virtual_map_interactive(data, mode="war")
-
-
-
