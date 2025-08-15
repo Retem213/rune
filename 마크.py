@@ -1,8 +1,8 @@
 import streamlit as st
 import math
-import plotly.express as px
 import pandas as pd
-import os
+import plotly.graph_objects as go
+
 
 
 # ------------------ 데이터 정의 ------------------
@@ -259,3 +259,4 @@ if tab_option == "가상 지도":
 elif tab_option == "전쟁지도":
     st.title("전쟁지도")
     plot_virtual_map_interactive(data)
+
