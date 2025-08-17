@@ -36,7 +36,9 @@ data = {
         {"name": "저주 설계자 모르모트", "location": [-226, 72, 369], "region": "공허의 전당", "reward": "5000G, 공허한 운석, 미약한 힘이 담긴 영혼", "notes": ""},
         {"name": "키메라워리어", "location": [-158, 73, 33], "region": "혼동의 미궁", "reward": "", "notes": "사자혼종에서 변경된 보스"},
         {"name": "", "location": [199 , 70, 73], "region": "파편의 보루 던전", "reward": "", "notes": ""},
-        {"name": "새벽을 가르는 자 엘리나", "location": [903, 68, 381], "region": "여명의 경계 던전", "reward": "", "notes": ""},
+        {"name": "천둥의 포효 드렌자르 던전", "location": [-238, 68, -125], "region": "폭풍 첨탑 성채", "reward": "6000G, 벽조목, 미약한 힘이 담긴 영혼", "notes": ""},
+        {"name": "공허한 어둠 아벨", "location": [-32, 75, -188], "region": "암연의 응시", "reward": "7000G, 공허의 촉수, 미약한 힘이 담긴 영혼", "notes": ""},
+        {"name": "새벽을 가르는 자 엘리나", "location": [903, 68, 381], "region": "여명의 경계 던전", "reward": "8000G, 응측된 힘이 담긴 영혼", "notes": ""},
     ],
     "npcs": [
         {"name": "정수 상인", "location": [-4077, 72, 78], "notes": ""},
@@ -368,4 +370,5 @@ elif tab_option == "가상 지도":
 elif tab_option == "전쟁지도":
     st.title("전쟁지도")
     plot_virtual_map_interactive(data, mode="war")
+
 
