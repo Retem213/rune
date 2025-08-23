@@ -39,6 +39,10 @@ data = {
         {"name": "천둥의 포효 드렌자르 던전", "location": [-238, 68, -125], "region": "폭풍 첨탑 성채", "reward": "6000G, 벽조목, 미약한 힘이 담긴 영혼", "notes": ""},
         {"name": "공허한 어둠 아벨", "location": [-32, 75, -188], "region": "암연의 응시", "reward": "7000G, 공허의 촉수, 미약한 힘이 담긴 영혼", "notes": ""},
         {"name": "새벽을 가르는 자 엘리나", "location": [903, 68, 381], "region": "여명의 경계 던전", "reward": "8000G, 응측된 힘이 담긴 영혼", "notes": ""},
+        {"name": "부패한 사령 벨모라", "location": [-1365, 24, 1060], "region": "불길한 무덤", "reward": "8000G, 불길한 가죽책", "notes": ""},
+        {"name": "황천의 심판자 아누비스", "location": [-1822, 68, 1560], "region": "사자의 서", "reward": "8000G, 심판의 추", "notes": ""},
+        {"name": "", "location": [-1599, 88, 1314], "region": "모래바람의 투기장", "reward": "", "notes": ""},
+        {"name": "사막의 암살자 살라딘", "location": [-1327, 72, 1592], "region": "고요한 황무지", "reward": "8000G, 부러진 차그람", "notes": ""},
     ],
     "npcs": [
         {"name": "정수 상인", "location": [-4077, 72, 78], "notes": ""},
@@ -71,16 +75,22 @@ data = {
         {"name": "글리야 마을 동쪽", "location": [428, 71, 395], "region_type": "던전"},
         {"name": "글리야 마을 남쪽", "location": [140, 70, 774], "region_type": "던전"},
         {"name": "글리야 마을 북동쪽", "location": [246, 68, 115], "region_type": "던전"},
-        {"name": "글리야 마을 북서쪽", "location": [-235, 71, 29], "region_type": "던전"}
+        {"name": "글리야 마을 북서쪽", "location": [-235, 71, 29], "region_type": "던전"},
+        {"name": "프론티아 마을 중앙", "location": [-1313, 77, 1854], "region_type": "마을"},
+        {"name": "프론티아 마을 동쪽", "location": [-1048, 70, 1182], "region_type": "던전"},
+        {"name": "프론티아 서쪽", "location": [-1976, 68, 1544], "region_type": "던전"},
     ],
     "Dungeon Boys": [
-        {"name": "임시 주성", "location": [111, 111, 111]},
+        {"name": "주성", "location": [948, 80, -605]},
+        {"name": "부성1", "location": [-1976, 68, -158]},
+        {"name": "부성2", "location": [1305, 24, -973]},
+        {"name": "부성3성", "location": [-526, 80, 421]},
     ],
     "Wasobeso": [
-        {"name": "임시 주성", "location": [222, 222, 222]},
+        
     ],
     "Tangled Dahye": [
-        {"name": "임시 주성", "location": [333, 333, 333]},
+        
     ]
 }
 
@@ -370,5 +380,6 @@ elif tab_option == "가상 지도":
 elif tab_option == "전쟁지도":
     st.title("전쟁지도")
     plot_virtual_map_interactive(data, mode="war")
+
 
 
