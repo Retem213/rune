@@ -43,6 +43,7 @@ data = {
         {"name": "황천의 심판자 아누비스", "location": [-1822, 68, 1560], "region": "사자의 서", "reward": "8000G, 심판의 추", "notes": ""},
         {"name": "", "location": [-1599, 88, 1314], "region": "모래바람의 투기장", "reward": "", "notes": ""},
         {"name": "사막의 암살자 살라딘", "location": [-1327, 72, 1592], "region": "고요한 황무지", "reward": "8000G, 부러진 차그람", "notes": ""},
+        {"name": "사막의 무희 살리나", "location": [-1260, 74, 1170], "region": "황폐한 땅", "reward": "7000G", "notes": ""},
     ],
     "npcs": [
         {"name": "정수 상인", "location": [-4077, 72, 78], "notes": ""},
@@ -380,6 +381,7 @@ elif tab_option == "가상 지도":
 elif tab_option == "전쟁지도":
     st.title("전쟁지도")
     plot_virtual_map_interactive(data, mode="war")
+
 
 
 
