@@ -44,7 +44,6 @@ data = {
         {"name": "사막의 무희 살리나", "location": [-1260, 74, 1170], "region": "황폐한 땅", "reward": "7000G", "notes": ""},
     ],
     "npcs": [
-        {"name": "정수 상인", "location": [-4077, 72, 78], "notes": ""},
         {"name": "아이벨, 파르티오", "location": [2550, 86, -1011], "notes": ""},
         {"name": "샤벨", "location": [2774, 106, -940], "notes": ""},
         {"name": "잡화 상점 글리아", "location": [2660, 72, -756], "notes": ""},
@@ -239,7 +238,8 @@ def plot_virtual_map_interactive(data, mode="normal"):
                 for item in data[data_key]:
                     nearest, dist = get_nearest_teleport(item["location"], data["teleports"])
                     df_rows.append({
-                        "이름": item["name"], "X": item["location"][0], "Y": item["location"][1], "Z": item["location"][2], "nearest_tp": d["name"], "nearest_tp_type": d["region_type"], "dist": dist
+                        "이름": item["name"], "X": item["location"][0], "Y": item["location"][1], "Z": item["location"][2],
+                        "nearest_tp": nearest["name"], "nearest_tp_type": nearest["region_type"], "dist": dist
                     })
                 df = pd.DataFrame(df_rows)
 
@@ -255,7 +255,7 @@ def plot_virtual_map_interactive(data, mode="normal"):
                 fig.add_trace(go.Scatter(
                     x=df["X"], y=df["Z"], mode="markers+text", name=display_name,
                     marker=dict(color=color, size=8),
-                    text=df["이름"].where(df["이름"].isin(selected_names), ""),
+                    text=df.apply(lambda r: f"{r['이름']} (↔{r['nearest_tp']})" if r["이름"] in selected_names else "", axis=1),
                     textposition="top center",
                     customdata=df[["X","Y","Z","이름","nearest_tp","nearest_tp_type","dist"]],
                     hovertemplate="이름=%{customdata[3]}<br>"
@@ -263,8 +263,6 @@ def plot_virtual_map_interactive(data, mode="normal"):
                                   "가까운 텔레포트:%{customdata[4]} (%{customdata[5]})<br>"
                                   "거리:%{customdata[6]}m"
                 ))
-
-        # 전쟁지도에서도 텔레포트 표시
         df_tp = pd.DataFrame([
             {"이름": tp["name"], "X": tp["location"][0], "Y": tp["location"][1], "Z": tp["location"][2],
              "지역구분": tp["region_type"]}
@@ -404,6 +402,7 @@ elif tab_option == "가상 지도":
 elif tab_option == "전쟁지도":
     st.title("전쟁지도")
     plot_virtual_map_interactive(data, mode="war")
+
 
 
 
