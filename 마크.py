@@ -3,8 +3,6 @@ import math
 import pandas as pd
 import plotly.graph_objects as go
 
-
-
 # ------------------ 데이터 정의 ------------------
 data = {
     "dungeons": [
@@ -209,40 +207,52 @@ def plot_virtual_map_interactive(data, mode="normal"):
             ))
 
     elif mode == "war":
-        war_categories = [
-            ("Dungeon Boys", "던전보이즈", "green"),
-            ("Wasobeso", "와쏘베쏘", "blue"),
-            ("Tangled Dahye", "탱글다혜", "brown")
-        ]
+    war_categories = [
+        ("Dungeon Boys", "던전보이즈", "green"),
+        ("Wasobeso", "와쏘베쏘", "blue"),
+        ("Tangled Dahye", "탱글다혜", "brown")
+    ]
 
-        for data_key, display_name, color in war_categories:
-            if data_key in data:
-                df = pd.DataFrame([
-                    {"이름": item["name"], "X": item["location"][0], "Y": item["location"][1], "Z": item["location"][2]}
-                    for item in data[data_key]
-                ])
-    
-                group_names = df["이름"].tolist()
-                selected_names = []
+    for data_key, display_name, color in war_categories:
+        if data_key in data:
+            df_rows = []
+            for item in data[data_key]:
+                nearest, dist = get_nearest_teleport(item["location"], data["teleports"])
+                df_rows.append({
+                    "이름": item["name"],
+                    "X": item["location"][0],
+                    "Y": item["location"][1],
+                    "Z": item["location"][2],
+                    "nearest_tp": nearest["name"],
+                    "nearest_tp_type": nearest["region_type"],
+                    "dist": dist
+                })
+            df = pd.DataFrame(df_rows)
 
-                with st.sidebar.expander(f"{display_name} 목록", expanded=False):
-                    toggle_names = st.checkbox(f"{display_name} 전체 ON/OFF", value=True, key=f"toggle_{data_key}")
-                    for i, name in enumerate(group_names):
-                        checked = st.checkbox(f"{name}", key=f"{data_key}_{i}", value=toggle_names)
-                        if checked:
-                            selected_names.append(name)
+            group_names = df["이름"].tolist()
+            selected_names = []
 
-                fig.add_trace(go.Scatter(
-                    x=df["X"], y=df["Z"], mode="markers+text", name=display_name,
-                    marker=dict(color=color, size=8),
-                    text=df["이름"].where(df["이름"].isin(selected_names), ""),
-                    textposition="top center",
-                    customdata=df[["X", "Y", "Z", "이름"]],
-                    hovertemplate="X=%{customdata[0]}<br>Y=%{customdata[1]}<br>"
-                                  "Z=%{customdata[2]}<br>이름=%{customdata[3]}"
-                ))
+            with st.sidebar.expander(f"{display_name} 목록", expanded=False):
+                toggle_names = st.checkbox(f"{display_name} 전체 ON/OFF", value=True, key=f"toggle_{data_key}")
+                for i, name in enumerate(group_names):
+                    checked = st.checkbox(f"{name}", key=f"{data_key}_{i}", value=toggle_names)
+                    if checked:
+                        selected_names.append(name)
 
-    # 텔레포트 표시
+            fig.add_trace(go.Scatter(
+                x=df["X"], y=df["Z"], mode="markers+text", name=display_name,
+                marker=dict(color=color, size=8),
+                text=df["이름"].where(df["이름"].isin(selected_names), ""),
+                textposition="top center",
+                customdata=df[["X", "Y", "Z", "이름", "nearest_tp", "nearest_tp_type", "dist"]],
+                hovertemplate="X=%{customdata[0]}<br>"
+                              "Y=%{customdata[1]}<br>"
+                              "Z=%{customdata[2]}<br>"
+                              "이름=%{customdata[3]}<br>"
+                              "가까운 텔레포트=%{customdata[4]} (%{customdata[5]})<br>"
+                              "거리=%{customdata[6]}m"
+            ))
+            
         df_tp = pd.DataFrame([
             {"이름": tp["name"], "X": tp["location"][0], "Y": tp["location"][1], "Z": tp["location"][2],
              "지역구분": tp["region_type"]}
@@ -381,6 +391,7 @@ elif tab_option == "가상 지도":
 elif tab_option == "전쟁지도":
     st.title("전쟁지도")
     plot_virtual_map_interactive(data, mode="war")
+
 
 
 
