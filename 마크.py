@@ -211,13 +211,17 @@ def plot_virtual_map_interactive(data, mode="normal"):
                     if checked:
                         selected_tps.append(name)
             fig.add_trace(go.Scatter(
-                x=df_tp["X"], y=df_tp["Z"], mode="markers+text", name="텔레포트",
-                marker=dict(color="purple", size=8),
-                text=df_tp["이름"].where(df_tp["이름"].isin(selected_tps), ""),
+                x=df["X"], y=df["Z"], mode="markers+text", name=display_name,
+                marker=dict(color=color, size=8),
+                text=df["이름"].where(df["이름"].isin(selected_names), ""),   # 선택된 이름만 표시
                 textposition="top center",
-                customdata=df_tp[["X","Y","Z","이름","지역구분"]],
-                hovertemplate="X=%{customdata[0]}<br>Y=%{customdata[1]}<br>Z=%{customdata[2]}"
-                              "<br>이름=%{customdata[3]}<br>지역구분=%{customdata[4]}"
+                customdata=df[["X","Y","Z","이름","nearest_tp_name","nearest_tp_type","dist"]],
+                hovertemplate=(
+                    "이름: %{customdata[3]}<br>"
+                    "좌표: (%{customdata[0]}, %{customdata[1]}, %{customdata[2]})<br>"
+                    "가까운 텔레포트: %{customdata[4]} (%{customdata[5]})<br>"
+                    "거리: %{customdata[6]}m"
+                )
             ))
 
     elif mode == "war":
@@ -395,6 +399,7 @@ elif tab_option == "가상 지도":
 elif tab_option == "전쟁지도":
     st.title("전쟁지도")
     plot_virtual_map_interactive(data, mode="war")
+
 
 
 
