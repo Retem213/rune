@@ -143,8 +143,13 @@ def plot_virtual_map_interactive(data, mode="normal"):
                         selected_dungeons.append(name)
 
             df_dungeon = pd.DataFrame([
-                {"이름": d["name"], "X": d["location"][0], "Y": d["location"][1], "Z": d["location"][2],
-                 "지역": d["region"], "보상": d["reward"]}
+                {
+                    "이름": d["name"], "X": d["location"][0], "Y": d["location"][1], "Z": d["location"][2],
+                    "지역": d["region"], "보상": d["reward"],
+                    **dict(zip(["nearest_tp", "nearest_tp_type", "dist"],
+                               (lambda n, dist: (n["name"], n["region_type"], dist))
+                               (*get_nearest_teleport(d["location"], data["teleports"]))))
+                }
                 for d in data["dungeons"]
             ])
             fig.add_trace(go.Scatter(
@@ -152,9 +157,11 @@ def plot_virtual_map_interactive(data, mode="normal"):
                 marker=dict(color="red", size=8),
                 text=df_dungeon["이름"].where(df_dungeon["이름"].isin(selected_dungeons), ""),
                 textposition="top center",
-                customdata=df_dungeon[["X", "Y", "Z", "이름", "지역", "보상"]],
-                hovertemplate="X=%{customdata[0]}<br>Y=%{customdata[1]}<br>Z=%{customdata[2]}<br>"
-                              "이름=%{customdata[3]}<br>지역=%{customdata[4]}<br>보상=%{customdata[5]}"
+                customdata=df_dungeon[["X","Y","Z","이름","지역","보상","nearest_tp","nearest_tp_type","dist"]],
+                hovertemplate="X=%{customdata[0]}<br>Y=%{customdata[1]}<br>Z=%{customdata[2]}"
+                              "<br>이름=%{customdata[3]}<br>지역=%{customdata[4]}<br>보상=%{customdata[5]}"
+                              "<br>가까운 텔레포트:%{customdata[6]} (%{customdata[7]})"
+                              "<br>거리:%{customdata[8]}m"
             ))
 
         if show_npc:
@@ -168,8 +175,13 @@ def plot_virtual_map_interactive(data, mode="normal"):
                         selected_npcs.append(name)
 
             df_npc = pd.DataFrame([
-                {"이름": n["name"], "X": n["location"][0], "Y": n["location"][1], "Z": n["location"][2],
-                 "비고": n.get("notes", "")}
+                {
+                    "이름": n["name"], "X": n["location"][0], "Y": n["location"][1], "Z": n["location"][2],
+                    "비고": n.get("notes", ""),
+                    **dict(zip(["nearest_tp", "nearest_tp_type", "dist"],
+                               (lambda t, dist: (t["name"], t["region_type"], dist))
+                               (*get_nearest_teleport(n["location"], data["teleports"]))))
+                }
                 for n in data["npcs"]
             ])
             fig.add_trace(go.Scatter(
@@ -177,9 +189,11 @@ def plot_virtual_map_interactive(data, mode="normal"):
                 marker=dict(color="yellow", size=8),
                 text=df_npc["이름"].where(df_npc["이름"].isin(selected_npcs), ""),
                 textposition="top center",
-                customdata=df_npc[["X", "Y", "Z", "이름", "비고"]],
-                hovertemplate="X=%{customdata[0]}<br>Y=%{customdata[1]}<br>Z=%{customdata[2]}<br>"
-                              "이름=%{customdata[3]}<br>비고=%{customdata[4]}"
+                customdata=df_npc[["X","Y","Z","이름","비고","nearest_tp","nearest_tp_type","dist"]],
+                hovertemplate="X=%{customdata[0]}<br>Y=%{customdata[1]}<br>Z=%{customdata[2]}"
+                              "<br>이름=%{customdata[3]}<br>비고=%{customdata[4]}"
+                              "<br>가까운 텔레포트:%{customdata[5]} (%{customdata[6]})"
+                              "<br>거리:%{customdata[7]}m"
             ))
 
         if show_tp:
@@ -201,9 +215,9 @@ def plot_virtual_map_interactive(data, mode="normal"):
                 marker=dict(color="purple", size=8),
                 text=df_tp["이름"].where(df_tp["이름"].isin(selected_tps), ""),
                 textposition="top center",
-                customdata=df_tp[["X", "Y", "Z", "이름", "지역구분"]],
-                hovertemplate="X=%{customdata[0]}<br>Y=%{customdata[1]}<br>Z=%{customdata[2]}<br>"
-                              "이름=%{customdata[3]}<br>지역구분=%{customdata[4]}"
+                customdata=df_tp[["X","Y","Z","이름","지역구분"]],
+                hovertemplate="X=%{customdata[0]}<br>Y=%{customdata[1]}<br>Z=%{customdata[2]}"
+                              "<br>이름=%{customdata[3]}<br>지역구분=%{customdata[4]}"
             ))
 
     elif mode == "war":
@@ -219,19 +233,13 @@ def plot_virtual_map_interactive(data, mode="normal"):
                 for item in data[data_key]:
                     nearest, dist = get_nearest_teleport(item["location"], data["teleports"])
                     df_rows.append({
-                        "이름": item["name"],
-                        "X": item["location"][0],
-                        "Y": item["location"][1],
-                        "Z": item["location"][2],
-                        "nearest_tp": nearest["name"],
-                        "nearest_tp_type": nearest["region_type"],
-                        "dist": dist
+                        "이름": item["name"], "X": item["location"][0], "Y": item["location"][1], "Z": item["location"][2],
+                        "nearest_tp": nearest["name"], "nearest_tp_type": nearest["region_type"], "dist": dist
                     })
                 df = pd.DataFrame(df_rows)
 
                 group_names = df["이름"].tolist()
                 selected_names = []
-
                 with st.sidebar.expander(f"{display_name} 목록", expanded=False):
                     toggle_names = st.checkbox(f"{display_name} 전체 ON/OFF", value=True, key=f"toggle_{data_key}")
                     for i, name in enumerate(group_names):
@@ -244,15 +252,13 @@ def plot_virtual_map_interactive(data, mode="normal"):
                     marker=dict(color=color, size=8),
                     text=df["이름"].where(df["이름"].isin(selected_names), ""),
                     textposition="top center",
-                    customdata=df[["X", "Y", "Z", "이름", "nearest_tp", "nearest_tp_type", "dist"]],
-                    hovertemplate="X=%{customdata[0]}<br>"
-                                  "Y=%{customdata[1]}<br>"
-                                  "Z=%{customdata[2]}<br>"
-                                  "이름=%{customdata[3]}<br>"
-                                  "가까운 텔레포트=%{customdata[4]} (%{customdata[5]})<br>"
-                                  "거리=%{customdata[6]}m"
+                    customdata=df[["X","Y","Z","이름","nearest_tp","nearest_tp_type","dist"]],
+                    hovertemplate="X=%{customdata[0]}<br>Y=%{customdata[1]}<br>Z=%{customdata[2]}"
+                                  "<br>이름=%{customdata[3]}"
+                                  "<br>가까운 텔레포트:%{customdata[4]} (%{customdata[5]})"
+                                  "<br>거리:%{customdata[6]}m"
                 ))
-                
+
         df_tp = pd.DataFrame([
             {"이름": tp["name"], "X": tp["location"][0], "Y": tp["location"][1], "Z": tp["location"][2],
              "지역구분": tp["region_type"]}
@@ -272,9 +278,9 @@ def plot_virtual_map_interactive(data, mode="normal"):
             marker=dict(color="purple", size=8),
             text=df_tp["이름"].where(df_tp["이름"].isin(selected_tps), ""),
             textposition="top center",
-            customdata=df_tp[["X", "Y", "Z", "이름", "지역구분"]],
-            hovertemplate="X=%{customdata[0]}<br>Y=%{customdata[1]}<br>"
-                          "Z=%{customdata[2]}<br>이름=%{customdata[3]}<br>지역구분=%{customdata[4]}"
+            customdata=df_tp[["X","Y","Z","이름","지역구분"]],
+            hovertemplate="X=%{customdata[0]}<br>Y=%{customdata[1]}<br>Z=%{customdata[2]}"
+                          "<br>이름=%{customdata[3]}<br>지역구분=%{customdata[4]}"
         ))
 
     if not fig.data:
@@ -287,8 +293,6 @@ def plot_virtual_map_interactive(data, mode="normal"):
 # ------------------ Streamlit ------------------
 st.set_page_config(layout="wide")
 st.sidebar.title("메뉴")
-
-tab_option = st.sidebar.radio("탭 선택", ["검색기능", "카테고리", "좌표 검색", "가상 지도", "전쟁지도"])
 
 # ------------------ 검색 탭 ------------------
 if tab_option == "검색기능":
@@ -391,6 +395,7 @@ elif tab_option == "가상 지도":
 elif tab_option == "전쟁지도":
     st.title("전쟁지도")
     plot_virtual_map_interactive(data, mode="war")
+
 
 
 
