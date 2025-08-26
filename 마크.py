@@ -132,6 +132,7 @@ def plot_virtual_map_interactive(data, mode="normal"):
         show_npc = st.sidebar.checkbox("NPC 표시", value=True)
         show_tp = st.sidebar.checkbox("텔레포트 표시", value=True)
 
+        # ------------------ 던전 ------------------
         if show_dungeon:
             dungeon_names = [d["name"] for d in data["dungeons"]]
             selected_dungeons = []
@@ -158,12 +159,14 @@ def plot_virtual_map_interactive(data, mode="normal"):
                 text=df_dungeon["이름"].where(df_dungeon["이름"].isin(selected_dungeons), ""),
                 textposition="top center",
                 customdata=df_dungeon[["X","Y","Z","이름","지역","보상","nearest_tp","nearest_tp_type","dist"]],
-                hovertemplate="X=%{customdata[0]}<br>Y=%{customdata[1]}<br>Z=%{customdata[2]}"
-                              "<br>이름=%{customdata[3]}<br>지역=%{customdata[4]}<br>보상=%{customdata[5]}"
-                              "<br>가까운 텔레포트:%{customdata[6]} (%{customdata[7]})"
-                              "<br>거리:%{customdata[8]}m"
+                hovertemplate="이름=%{customdata[3]}<br>"
+                              "좌표=(%{customdata[0]}, %{customdata[1]}, %{customdata[2]})<br>"
+                              "지역=%{customdata[4]}<br>보상=%{customdata[5]}<br>"
+                              "가까운 텔레포트:%{customdata[6]} (%{customdata[7]})<br>"
+                              "거리:%{customdata[8]}m"
             ))
 
+        # ------------------ NPC ------------------
         if show_npc:
             npc_names = [n["name"] for n in data["npcs"]]
             selected_npcs = []
@@ -190,12 +193,14 @@ def plot_virtual_map_interactive(data, mode="normal"):
                 text=df_npc["이름"].where(df_npc["이름"].isin(selected_npcs), ""),
                 textposition="top center",
                 customdata=df_npc[["X","Y","Z","이름","비고","nearest_tp","nearest_tp_type","dist"]],
-                hovertemplate="X=%{customdata[0]}<br>Y=%{customdata[1]}<br>Z=%{customdata[2]}"
-                              "<br>이름=%{customdata[3]}<br>비고=%{customdata[4]}"
-                              "<br>가까운 텔레포트:%{customdata[5]} (%{customdata[6]})"
-                              "<br>거리:%{customdata[7]}m"
+                hovertemplate="이름=%{customdata[3]}<br>"
+                              "좌표=(%{customdata[0]}, %{customdata[1]}, %{customdata[2]})<br>"
+                              "비고=%{customdata[4]}<br>"
+                              "가까운 텔레포트:%{customdata[5]} (%{customdata[6]})<br>"
+                              "거리:%{customdata[7]}m"
             ))
 
+        # ------------------ 텔레포트 ------------------
         if show_tp:
             df_tp = pd.DataFrame([
                 {"이름": tp["name"], "X": tp["location"][0], "Y": tp["location"][1], "Z": tp["location"][2],
@@ -211,17 +216,14 @@ def plot_virtual_map_interactive(data, mode="normal"):
                     if checked:
                         selected_tps.append(name)
             fig.add_trace(go.Scatter(
-                x=df["X"], y=df["Z"], mode="markers+text", name=display_name,
-                marker=dict(color=color, size=8),
-                text=df["이름"].where(df["이름"].isin(selected_names), ""),   # 선택된 이름만 표시
+                x=df_tp["X"], y=df_tp["Z"], mode="markers+text", name="텔레포트",
+                marker=dict(color="purple", size=8),
+                text=df_tp["이름"].where(df_tp["이름"].isin(selected_tps), ""),
                 textposition="top center",
-                customdata=df[["X","Y","Z","이름","nearest_tp_name","nearest_tp_type","dist"]],
-                hovertemplate=(
-                    "이름: %{customdata[3]}<br>"
-                    "좌표: (%{customdata[0]}, %{customdata[1]}, %{customdata[2]})<br>"
-                    "가까운 텔레포트: %{customdata[4]} (%{customdata[5]})<br>"
-                    "거리: %{customdata[6]}m"
-                )
+                customdata=df_tp[["X","Y","Z","이름","지역구분"]],
+                hovertemplate="이름=%{customdata[3]}<br>"
+                              "좌표=(%{customdata[0]}, %{customdata[1]}, %{customdata[2]})<br>"
+                              "지역구분=%{customdata[4]}"
             ))
 
     elif mode == "war":
@@ -257,12 +259,13 @@ def plot_virtual_map_interactive(data, mode="normal"):
                     text=df["이름"].where(df["이름"].isin(selected_names), ""),
                     textposition="top center",
                     customdata=df[["X","Y","Z","이름","nearest_tp","nearest_tp_type","dist"]],
-                    hovertemplate="X=%{customdata[0]}<br>Y=%{customdata[1]}<br>Z=%{customdata[2]}"
-                                  "<br>이름=%{customdata[3]}"
-                                  "<br>가까운 텔레포트:%{customdata[4]} (%{customdata[5]})"
-                                  "<br>거리:%{customdata[6]}m"
+                    hovertemplate="이름=%{customdata[3]}<br>"
+                                  "좌표=(%{customdata[0]}, %{customdata[1]}, %{customdata[2]})<br>"
+                                  "가까운 텔레포트:%{customdata[4]} (%{customdata[5]})<br>"
+                                  "거리:%{customdata[6]}m"
                 ))
 
+        # 전쟁지도에서도 텔레포트 표시
         df_tp = pd.DataFrame([
             {"이름": tp["name"], "X": tp["location"][0], "Y": tp["location"][1], "Z": tp["location"][2],
              "지역구분": tp["region_type"]}
@@ -283,8 +286,9 @@ def plot_virtual_map_interactive(data, mode="normal"):
             text=df_tp["이름"].where(df_tp["이름"].isin(selected_tps), ""),
             textposition="top center",
             customdata=df_tp[["X","Y","Z","이름","지역구분"]],
-            hovertemplate="X=%{customdata[0]}<br>Y=%{customdata[1]}<br>Z=%{customdata[2]}"
-                          "<br>이름=%{customdata[3]}<br>지역구분=%{customdata[4]}"
+            hovertemplate="이름=%{customdata[3]}<br>"
+                          "좌표=(%{customdata[0]}, %{customdata[1]}, %{customdata[2]})<br>"
+                          "지역구분=%{customdata[4]}"
         ))
 
     if not fig.data:
@@ -297,6 +301,8 @@ def plot_virtual_map_interactive(data, mode="normal"):
 # ------------------ Streamlit ------------------
 st.set_page_config(layout="wide")
 st.sidebar.title("메뉴")
+
+tab_option = st.sidebar.radio("탭 선택", ["검색기능", "카테고리", "좌표 검색", "가상 지도", "전쟁지도"])
 
 # ------------------ 검색 탭 ------------------
 if tab_option == "검색기능":
@@ -399,6 +405,7 @@ elif tab_option == "가상 지도":
 elif tab_option == "전쟁지도":
     st.title("전쟁지도")
     plot_virtual_map_interactive(data, mode="war")
+
 
 
 
