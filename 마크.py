@@ -239,8 +239,7 @@ def plot_virtual_map_interactive(data, mode="normal"):
                 for item in data[data_key]:
                     nearest, dist = get_nearest_teleport(item["location"], data["teleports"])
                     df_rows.append({
-                        "이름": item["name"], "X": item["location"][0], "Y": item["location"][1], "Z": item["location"][2],
-                        "nearest_tp": nearest["name"], "nearest_tp_type": nearest["region_type"], "dist": dist
+                        "이름": item["name"], "X": item["location"][0], "Y": item["location"][1], "Z": item["location"][2], "nearest_tp": d["name"], "nearest_tp_type": d["region_type"], "dist": dist
                     })
                 df = pd.DataFrame(df_rows)
 
@@ -405,6 +404,7 @@ elif tab_option == "가상 지도":
 elif tab_option == "전쟁지도":
     st.title("전쟁지도")
     plot_virtual_map_interactive(data, mode="war")
+
 
 
 
