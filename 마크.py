@@ -39,9 +39,12 @@ data = {
         {"name": "새벽을 가르는 자 엘리나", "location": [903, 68, 381], "region": "여명의 경계 던전", "reward": "8000G, 응측된 힘이 담긴 영혼", "notes": ""},
         {"name": "부패한 사령 벨모라", "location": [-1365, 24, 1060], "region": "불길한 무덤", "reward": "8000G, 불길한 가죽책", "notes": ""},
         {"name": "황천의 심판자 아누비스", "location": [-1822, 68, 1560], "region": "사자의 서", "reward": "8000G, 심판의 추", "notes": ""},
-        {"name": "", "location": [-1599, 88, 1314], "region": "모래바람의 투기장", "reward": "", "notes": ""},
+        {"name": "사막의 무법자 타리크", "location": [-1599, 88, 1314], "region": "모래바람의 투기장", "reward": "푸른 머리띠", "notes": ""},
         {"name": "사막의 암살자 살라딘", "location": [-1327, 72, 1592], "region": "고요한 황무지", "reward": "8000G, 부러진 차그람", "notes": ""},
         {"name": "사막의 무희 살리나", "location": [-1260, 74, 1170], "region": "황폐한 땅", "reward": "7000G", "notes": ""},
+        {"name": "피에 물든 파멸자 카르노스", "location": [-1481, 82, 665], "region": "혈혼의 맹세", "reward": "", "notes": ""},
+        {"name": "폭풍을 두른 자 매그니르", "location": [-1662, 77, 259], "region": "뇌운의 신전", "reward": "", "notes": ""},
+        {"name": "수확자 드렐리스", "location": [-2168, 82, 394], "region": "영혼의 들판", "reward": "낫 자루, 드렐리스 보상 상자", "notes": ""},
     ],
     "npcs": [
         {"name": "아이벨, 파르티오", "location": [2550, 86, -1011], "notes": ""},
@@ -77,6 +80,8 @@ data = {
         {"name": "프론티아 마을 중앙", "location": [-1313, 77, 1854], "region_type": "마을"},
         {"name": "프론티아 마을 동쪽", "location": [-1048, 70, 1182], "region_type": "던전"},
         {"name": "프론티아 서쪽", "location": [-1976, 68, 1544], "region_type": "던전"},
+        {"name": "프론티아 남쪽", "location": [-1976, 69, 1717], "region_type": "던전"},
+        {"name": "프론티아 마을 북쪽", "location": [-2080, 73, 464], "region_type": "던전"},
     ],
     "Dungeon Boys": [
         {"name": "주성", "location": [948, 80, -605]},
@@ -402,6 +407,7 @@ elif tab_option == "가상 지도":
 elif tab_option == "전쟁지도":
     st.title("전쟁지도")
     plot_virtual_map_interactive(data, mode="war")
+
 
 
 
