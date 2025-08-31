@@ -91,6 +91,7 @@ data = {
     ],
     "Wasobeso": [
         {"name": "부성1", "location": [-2232, 67, 44]},
+        {"name": "임시", "location": [219, -331, 80]},
     ],
     "Tangled Dahye": [
         {"name": "임시", "location": [-2491, 60, 271]},
@@ -407,6 +408,7 @@ elif tab_option == "가상 지도":
 elif tab_option == "전쟁지도":
     st.title("전쟁지도")
     plot_virtual_map_interactive(data, mode="war")
+
 
 
 
