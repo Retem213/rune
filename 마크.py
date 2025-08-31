@@ -42,9 +42,9 @@ data = {
         {"name": "사막의 무법자 타리크", "location": [-1599, 88, 1314], "region": "모래바람의 투기장", "reward": "푸른 머리띠", "notes": ""},
         {"name": "사막의 암살자 살라딘", "location": [-1327, 72, 1592], "region": "고요한 황무지", "reward": "8000G, 부러진 차그람", "notes": ""},
         {"name": "사막의 무희 살리나", "location": [-1260, 74, 1170], "region": "황폐한 땅", "reward": "7000G", "notes": ""},
-        {"name": "피에 물든 파멸자 카르노스", "location": [-1481, 82, 665], "region": "혈혼의 맹세", "reward": "", "notes": ""},
-        {"name": "폭풍을 두른 자 매그니르", "location": [-1662, 77, 259], "region": "뇌운의 신전", "reward": "", "notes": ""},
-        {"name": "수확자 드렐리스", "location": [-2168, 82, 394], "region": "영혼의 들판", "reward": "낫 자루, 드렐리스 보상 상자", "notes": ""},
+        {"name": "피에 물든 파멸자 카르노스", "location": [-1481, 82, 665], "region": "혈혼의 맹세", "reward": "불길한 보석, 응축된 힘이 담긴 영혼", "notes": ""},
+        {"name": "폭풍을 두른 자 매그니르", "location": [-1662, 77, 259], "region": "뇌운의 신전", "reward": "뇌운, 응축된 힘이 담긴 영혼, 매그니르 보상 상자", "notes": ""},
+        {"name": "수확자 드렐리스", "location": [-2168, 82, 394], "region": "영혼의 들판", "reward": "낫 자루, 드렐리스 보상 상자, 응축된 힘이 담긴 영혼", "notes": ""},
     ],
     "npcs": [
         {"name": "아이벨, 파르티오", "location": [2550, 86, -1011], "notes": ""},
@@ -407,6 +407,7 @@ elif tab_option == "가상 지도":
 elif tab_option == "전쟁지도":
     st.title("전쟁지도")
     plot_virtual_map_interactive(data, mode="war")
+
 
 
 
