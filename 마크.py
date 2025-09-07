@@ -88,7 +88,7 @@ data = {
         {"name": "주성", "location": [948, 80, -605]},
         {"name": "부성1", "location": [-1976, 68, -158]},
         {"name": "부성2", "location": [1305, 24, -973]},
-        {"name": "부성3", "location": [-607, 77, 93]},
+        {"name": "부성3 파괴", "location": [-607, 77, 93]},
     ],
     "Wasobeso": [
         {"name": "부성2(글리아 1) 파괴", "location": [219, 80, -331]},
@@ -411,6 +411,7 @@ elif tab_option == "가상 지도":
 elif tab_option == "전쟁지도":
     st.title("전쟁지도")
     plot_virtual_map_interactive(data, mode="war")
+
 
 
 
