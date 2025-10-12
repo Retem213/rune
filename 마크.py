@@ -45,7 +45,8 @@ data = {
         {"name": "피에 물든 파멸자 카르노스", "location": [-1481, 82, 665], "region": "혈혼의 맹세", "reward": "불길한 보석, 응축된 힘이 담긴 영혼", "notes": ""},
         {"name": "폭풍을 두른 자 매그니르", "location": [-1662, 77, 259], "region": "뇌운의 신전", "reward": "뇌운, 응축된 힘이 담긴 영혼, 매그니르 보상 상자", "notes": ""},
         {"name": "수확자 드렐리스", "location": [-2168, 82, 394], "region": "영혼의 들판", "reward": "낫 자루, 드렐리스 보상 상자, 응축된 힘이 담긴 영혼", "notes": ""},
-        {"name": "용의 전사 드라코니스", "location": [-2290, 70, 611], "region": "용의 안식처", "reward": "드라코니스 보상 상자, 전설룬", "notes": ""},
+        {"name": "용의 전사 드라코니스", "location": [-2290, 70, 611], "region": "용의 안식처", "reward": "드라코니스 보상 상자, 전설룬, 드래곤의 뿔", "notes": ""},
+        {"name": "용의 전사 드라코니스", "location": [1987, 102, -2249], "region": "마지막 섬광", "reward": "", "notes": ""},
     ],
     "npcs": [
         {"name": "아이벨, 파르티오", "location": [2550, 86, -1011], "notes": ""},
@@ -83,6 +84,7 @@ data = {
         {"name": "프론티아 서쪽", "location": [-1976, 68, 1544], "region_type": "던전"},
         {"name": "프론티아 남쪽", "location": [-1976, 69, 1717], "region_type": "던전"},
         {"name": "프론티아 마을 북쪽", "location": [-2080, 73, 464], "region_type": "던전"},
+        {"name": "???. 잊혀진 섬", "location": [2053, 137, -2438], "region_type": "던전"},
     ],
     "Dungeon Boys": [
         {"name": "주성", "location": [948, 80, -605]},
@@ -411,6 +413,7 @@ elif tab_option == "가상 지도":
 elif tab_option == "전쟁지도":
     st.title("전쟁지도")
     plot_virtual_map_interactive(data, mode="war")
+
 
 
 
