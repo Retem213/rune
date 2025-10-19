@@ -101,6 +101,7 @@ data = {
     "Tangled Dahye": [ 
         {"name": "부성 파괴", "location": [-2232, 67, 44]},
         {"name": "부성 파괴", "location": [1026, 70, 53]},
+        {"name": "누군가의 성", "location": [440, 67, -1640]},
     ]
 }
 
@@ -414,6 +415,7 @@ elif tab_option == "가상 지도":
 elif tab_option == "전쟁지도":
     st.title("전쟁지도")
     plot_virtual_map_interactive(data, mode="war")
+
 
 
 
