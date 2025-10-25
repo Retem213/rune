@@ -88,7 +88,7 @@ data = {
     ],
     "Dungeon Boys": [
         {"name": "주성", "location": [948, 80, -605]},
-        {"name": "부성", "location": [-607, 77, 93]},
+        {"name": "부성 파괴", "location": [-607, 77, 93]},
         {"name": "부성 파괴", "location": [1305, 24, -973]},
         {"name": "부성 파괴", "location": [-1976, 68, -158]},
     ],
@@ -416,6 +416,7 @@ elif tab_option == "가상 지도":
 elif tab_option == "전쟁지도":
     st.title("전쟁지도")
     plot_virtual_map_interactive(data, mode="war")
+
 
 
 
